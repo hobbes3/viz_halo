@@ -1,0 +1,41 @@
+<dashboard>
+  <search id="base">   
+  <query>| inputlookup clinton_trump.csv
+| eval outer='committee.name'
+| eval inner=candidate
+| eval count=round(spent)
+| eval ribbon=toward
+| eval ribbon_color=if(toward="supporting", "#2ca02c", "#d62728")
+| eval outer_link=if(committee_id="none", null(), "https://beta.fec.gov/data/committee/".committee_id)
+| eval inner_link="https://beta.fec.gov/data/candidate/".candidate_id."/?cycle=2016&amp;election_full=true"
+| eval inner_img="/static/app/viz_halo/".candidate."_head.jpg"
+| table outer* ribbon* inner* count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+          <sampleRatio>1</sampleRatio></search>
+  <row>
+    <panel>
+      <viz type="viz_halo.halo">
+        <search base="base">
+
+        </search>
+        <option name="height">800</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search base="base">
+        </search>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>

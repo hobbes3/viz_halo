@@ -1,0 +1,38 @@
+#tooltip {
+    font-size: 1.2em;
+    position: absolute;
+    z-index: 100;
+    visibility: hidden;
+    background-color: black;
+    color: white;
+    padding: 0.2em;
+}
+
+image, .arc_outer, .front {
+    cursor: pointer;
+    cursor: hand;
+}
+
+.label-text {
+    alignment-baseline: middle;
+    text-transform: uppercase;
+}
+
+.label-line {
+    stroke-width: 1;
+    stroke: black;
+}
+
+.label-circle {
+    fill: black;
+}
+
+.line {
+    fill: none;
+    stroke-width: 1.5px;
+}
+
+path {
+    stroke: #161616;
+    stroke-width: 1px;
+}
