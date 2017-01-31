@@ -1,3 +1,8 @@
+#halo {
+    display: block;
+    margin: auto;
+}
+
 #tooltip {
     font-size: 1.2em;
     position: absolute;
@@ -8,31 +13,31 @@
     padding: 0.2em;
 }
 
-image, .arc_outer, .front {
-    cursor: pointer;
-    cursor: hand;
+#ribbon_controls {
+    position: absolute;
+    margin: 10px;
 }
 
-.label-text {
+#halo .label-text {
     alignment-baseline: middle;
     text-transform: uppercase;
 }
 
-.label-line {
+#halo .label-line {
     stroke-width: 1;
     stroke: black;
 }
 
-.label-circle {
+#halo .label-circle {
     fill: black;
 }
 
-.line {
+#halo .line {
     fill: none;
     stroke-width: 1.5px;
 }
 
-path {
+#halo path {
     stroke: #161616;
     stroke-width: 1px;
 }

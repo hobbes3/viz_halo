@@ -22,7 +22,7 @@ function(
                 .append("div")
                     .attr("id", "tooltip");
 
-            this.$el.append('<div id="riddon_controls"><label>Choose ribbon types: </label><select id="ribbon_dropdown"><option value="all">All</option></select></div>');
+            this.$el.append('<div id="ribbon_controls"><label>Choose ribbon types: </label><select id="ribbon_dropdown"><option value="all">All</option></select></div>');
         },
 
         // Optionally implement to format data returned from search.
@@ -112,8 +112,6 @@ function(
                 return;
             }
 
-            debugger;
-
             this.$el.find("svg").remove();
 
             var ribbon_choice = "all",
@@ -162,6 +160,7 @@ function(
                 .append("svg")
                     .attr("width", width)
                     .attr("height", height)
+                    .attr("id", "halo")
                 .append("g")
                     .attr("transform", "translate(" + [width / 2, height / 2] + ")");
 
@@ -232,7 +231,9 @@ function(
                     "<br>" + that.pct_label(pct) + " of total amount" :
                     "<br>" + ribbon_label + ": " + that.pct_label(pct_ribbon) + " of total amount";
 
-                html += "<br><i>Click for more details</i>";
+                if(d.data.outer_link) {
+                    html += "<br><i>Click for more details</i>";
+                }
 
                 that.tooltip
                     .style("visibility", "visible")
@@ -268,14 +269,17 @@ function(
                 .enter()
                 .append("g")
                     .attr("class", "arc_outer")
+                    .style("cursor", function(d) {
+                        return d.data.outer_link ? "pointer" : "";
+                    })
                     .on("mouseover", mouseover_outer)
                     .on("mousemove", that.tooltip_position)
                     .on("mouseout", mouseout_default)
                     .on("click", function(d) {
-                        var committee_id = d.data.committee_id;
+                        var link = d.data.outer_link;
 
-                        if(committee_id !== "none") {
-                            window.open("https://beta.fec.gov/data/committee/" + committee_id, "_blank");
+                        if(link) {
+                            window.open(link, "_blank");
                         }
                     });
 
@@ -295,14 +299,17 @@ function(
                 .append("g")
                     .attr("class", "label-group")
                     .attr("visibility", "visible")
+                    .style("cursor", function(d) {
+                        return d.data.outer_link ? "pointer" : "";
+                    })
                     .on("mouseover", mouseover_outer)
                     .on("mousemove", that.tooltip_position)
                     .on("mouseout", mouseout_default)
                     .on("click", function(d) {
-                        var committee_id = d.data.committee_id;
+                        var link = d.data.outer_link;
 
-                        if(committee_id !== "none") {
-                            window.open("https://beta.fec.gov/data/committee/" + committee_id, "_blank");
+                        if(link) {
+                            window.open(link, "_blank");
                         }
                     });
 
@@ -571,6 +578,61 @@ function(
                         return d.r - thickness;
                     });
 
+            function mouseover_image(d) {
+                if(animation) return;
+
+                var inner_label = d.data.inner.capitalize(),
+                    count = d.value,
+                    total = data.stats.total,
+                    pct = count / total * 100,
+                    html;
+
+
+                if(ribbon_choice === "all") {
+                    html = inner_label + ": " + that.number_format(count) + " total" +
+                        "<br>" + that.pct_label(pct) + " of total amount";
+                }
+                else {
+                    total_ribbon = _(data.stats.ribbon).findWhere({"ribbon": ribbon_choice}).total,
+                    pct_ribbon = count / total_ribbon * 100;
+
+                    html = inner_label + ": " + that.number_format(count) + " " + ribbon_choice +
+                        "<br>" + that.pct_label(pct_ribbon) + " of " + ribbon_choice + " -> " + inner_label;
+                }
+
+                if(d.data.data[0].inner_link) {
+                    html += "<br><i>Click for more details</i>";
+                }
+
+                that.tooltip
+                    .style("visibility", "visible")
+                    .html(html);
+
+                path_outer_g
+                    .transition()
+                    .style("opacity", function(dd) {
+                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
+                    });
+
+                ribbon
+                    .transition()
+                    .style("opacity", function(dd) {
+                        return d.data.inner === dd.data.inner ? opacity_ribbon : opacity_fade;
+                    });
+
+                path_inner_g
+                    .transition()
+                    .style("opacity", function(dd) {
+                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
+                    });
+
+                image
+                    .transition()
+                    .style("opacity", function(dd) {
+                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
+                    });
+            }
+
             var image = node_inner_g
                 .append("image")
                     .attr("x", function(d) {
@@ -588,67 +650,21 @@ function(
                     .attr("xlink:href", function(d) {
                         return d.data.data[0].inner_img;
                     })
+                    .style("cursor", function(d) {
+                        return d.data.data[0].inner_link ? "pointer" : "";
+                    })
                     .style("clip-path", function(d) {
                         return "url(#clip_" + d.data.inner + ")";
                     })
-                    .on("mouseover", function(d) {
-                        if(animation) return;
-
-                        var inner_label = d.data.inner.capitalize(),
-                            count = d.value,
-                            total = data.stats.total,
-                            pct = count / total * 100,
-                            html;
-
-
-                        if(ribbon_choice === "all") {
-                            html = inner_label + ": " + that.number_format(count) + " total" +
-                                "<br>" + that.pct_label(pct) + " of total amount";
-                        }
-                        else {
-                            total_ribbon = _(data.stats.ribbon).findWhere({"ribbon": ribbon_choice}).total,
-                            pct_ribbon = count / total_ribbon * 100;
-
-                            html = inner_label + ": " + that.number_format(count) + " " + ribbon_choice +
-                                "<br>" + that.pct_label(pct_ribbon) + " of " + ribbon_choice + " -> " + inner_label;
-                        }
-
-                        html += "<br><i>Click for more details</i>";
-
-                        that.tooltip
-                            .style("visibility", "visible")
-                            .html(html);
-
-                        path_outer_g
-                            .transition()
-                            .style("opacity", function(dd) {
-                                return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
-                            });
-
-                        ribbon
-                            .transition()
-                            .style("opacity", function(dd) {
-                                return d.data.inner === dd.data.inner ? opacity_ribbon : opacity_fade;
-                            });
-
-                        path_inner_g
-                            .transition()
-                            .style("opacity", function(dd) {
-                                return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
-                            });
-
-                        image
-                            .transition()
-                            .style("opacity", function(dd) {
-                                return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
-                            });
-                    })
+                    .on("mouseover", mouseover_image)
                     .on("mousemove", that.tooltip_position)
                     .on("mouseout", mouseout_default)
                     .on("click", function(d) {
                         var link = d.data.data[0].inner_link;
 
-                        window.open(link, "_blank");
+                        if(link) {
+                            window.open(link, "_blank");
+                        }
                     });
 
             var arc_inner = d3.arc();
@@ -1038,7 +1054,7 @@ function(
                             };
                         });
 
-                image_clip
+                image_clip.data(bubble_inner(root).children)
                     .transition()
                     .duration(transition_duration)
                         .attr("r", function(d) {

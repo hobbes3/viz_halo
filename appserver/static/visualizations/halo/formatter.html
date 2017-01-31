@@ -1,4 +1,102 @@
-<form class="splunk-formatter-section" section-label="format">
-    <!-- Add html here to create formatter options -->
-    <p>No Options.</p>
+<form class="splunk-formatter-section" section-label="Size">
+    <div class="control-group">
+     	    <label class="control-label">Size</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.size"></splunk-text-input>
+            </div>
+    </div>
+    <div class="control-group">
+     	    <label class="control-label">Radius</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.radius"></splunk-text-input>
+            </div>
+    </div>
+    <div class="control-group">
+     	    <label class="control-label">Label Radius</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.radius_label"></splunk-text-input>
+            </div>
+    </div>
+    <div class="control-group">
+     	    <label class="control-label">Ring Thickness</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.thickness"></splunk-text-input>
+            </div>
+    </div>
+    <div class="control-group">
+     	    <label class="control-label">Packing Radius</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.radius_pack"></splunk-text-input>
+            </div>
+    </div>
+    <div class="control-group">
+     	    <label class="control-label">Packing Padding</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.padding_pack"></splunk-text-input>
+            </div>
+    </div>
 </form>
+<form class="splunk-formatter-section" section-label="Color">
+</form>
+<form class="splunk-formatter-section" section-label="Opacity">
+    <div class="control-group">
+     	    <label class="control-label">Ribbon Opacity</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.opacity_ribbon"></splunk-text-input>
+            </div>
+    </div>
+    <div class="control-group">
+     	    <label class="control-label">Faded Opacity</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.opacity_fade"></splunk-text-input>
+            </div>
+    </div>
+</form>
+<form class="splunk-formatter-section" section-label="Label">
+    <div class="control-group">
+     	    <label class="control-label">Label Font Size</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.label_font_size"></splunk-text-input>
+            </div>
+    </div>
+    <div class="control-group">
+     	    <label class="control-label">Label Spacing</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.label_spacing"></splunk-text-input>
+            </div>
+    </div>
+    <div class="control-group">
+     	    <label class="control-label">Label Wrap Length</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.label_wrap_length"></splunk-text-input>
+            </div>
+    </div>
+</form>
+<form class="splunk-formatter-section" section-label="Animation">
+    <div class="control-group">
+     	    <label class="control-label">Label De-Collison Delta</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.label_relax_delta"></splunk-text-input>
+            </div>
+    </div>
+    <div class="control-group">
+     	    <label class="control-label">Label De-Collison Sleep</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.label_relax_sleep"></splunk-text-input>
+            </div>
+    </div>
+    <div class="control-group">
+     	    <label class="control-label">Transition duration</label>
+    		<div class="controls controls-block">
+                <splunk-text-input name="{{VIZ_NAMESPACE}}.transition_duration"></splunk-text-input>
+            </div>
+    </div>
+</form>
+    <!--
+    <div class="control-group">
+     	    <label class="control-label">Critical color</label>
+    		<div class="controls controls-fill">
+                <splunk-color-picker name="{{VIZ_NAMESPACE}}.critical_color"></splunk-color-picker>
+            </div>
+    </div>
+    -->
