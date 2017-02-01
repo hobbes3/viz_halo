@@ -1,6 +1,6 @@
 <dashboard>
-  <search id="base">   
-  <query>| inputlookup clinton_trump.csv
+  <search id="base">
+    <query>| inputlookup clinton_trump.csv
 | eval outer='committee.name'
 | eval inner=candidate
 | eval count=round(spent)
@@ -10,24 +10,22 @@
 | eval inner_link="https://beta.fec.gov/data/candidate/".candidate_id."/?cycle=2016&amp;election_full=true"
 | eval inner_img="/static/app/viz_halo/".candidate."_head.jpg"
 | table outer* ribbon* inner* count</query>
-          <earliest>$earliest$</earliest>
-          <latest>$latest$</latest>
-          <sampleRatio>1</sampleRatio></search>
+    <earliest>$earliest$</earliest>
+    <latest>$latest$</latest>
+    <sampleRatio>1</sampleRatio>
+  </search>
   <row>
     <panel>
       <viz type="viz_halo.halo">
-        <search base="base">
-
-        </search>
-        <option name="height">800</option>
+        <search base="base"></search>
+        <option name="height">1400</option>
       </viz>
     </panel>
   </row>
   <row>
     <panel>
       <table>
-        <search base="base">
-        </search>
+        <search base="base"></search>
         <option name="count">50</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">cell</option>

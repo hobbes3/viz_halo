@@ -2,6 +2,7 @@ define([
     'jquery',
     'underscore',
     'd3',
+    'd3-scale-chromatic',
     'api/SplunkVisualizationBase',
     'api/SplunkVisualizationUtils'
 ],
@@ -9,6 +10,7 @@ function(
     $,
     _,
     d3,
+    d3_scale_chromatic,
     SplunkVisualizationBase,
     SplunkVisualizationUtils
 ) {
@@ -22,7 +24,7 @@ function(
                 .append("div")
                     .attr("id", "tooltip");
 
-            this.$el.append('<div id="ribbon_controls"><label>Choose ribbon types: </label><select id="ribbon_dropdown"><option value="all">All</option></select></div>');
+            this.$el.append('<div id="ribbon_controls"><label>Choose ribbon types: </label><select id="ribbon_dropdown"><option value="__ALL__">All</option></select></div>');
         },
 
         // Optionally implement to format data returned from search.
@@ -114,26 +116,40 @@ function(
 
             this.$el.find("svg").remove();
 
-            var ribbon_choice = "all",
-                animation = false,
-                width = that.$el.width() * 0.8,
-                height = width * 0.8,
-                radius = width / 2 * 0.55,
-                radius_label = radius * 1.1, // default radius for label before label_relax()
-                thickness = radius * 0.07,
-                ribbon_radius_cp_offset = radius * 0.2,
-                radius_pack = 0.8 * (radius - thickness),
-                padding_pack = radius * 0.1,
-                opacity_ribbon = 0.6,
-                opacity_fade = 0.1,
-                label_font_size = height * 0.014,
-                label_spacing = radius * 0.01, // px between the text label and line
-                label_wrap_length = radius * 0.7, // wrap to under in px
-                label_relax_delta = 0.5, // increment in px to separate colliding labels per label_relax() execution
-                label_relax_sleep = 10, // sleep label_relax() in ms
-                transition_duration = 750; // in ms
+            $("#ribbon_dropdown").val("__ALL__")
 
-            var color_outer = d3.scaleOrdinal(d3.schemeCategory20b);
+            function config_default(setting, is_float, default_value) {
+                var value = config[that.getPropertyNamespaceInfo().propertyNamespace + setting];
+
+                if(value !== undefined && is_float) {
+                    value = parseFloat(value);
+                }
+
+                return value === undefined ? default_value : value;
+            }
+
+            var ribbon_choice = "__ALL__",
+                animation = false,
+                // descriptions of each config setting in formatter.html
+                width                   = config_default("width",                   true,  that.$el.width() * 0.8),
+                height                  = config_default("height",                  true,  width * 0.8),
+                radius                  = config_default("radius",                  true,  width / 2 * 0.55),
+                radius_label            = config_default("radius_label",            true,  radius * 1.1),
+                thickness               = config_default("thickness",               true,  radius * 0.07),
+                ribbon_radius_cp_offset = config_default("ribbon_radius_cp_offset", true,  radius * 0.2),
+                outer_colors            = config_default("outer_colors",            false, "schemeCategory20b"),
+                radius_pack             = config_default("radius_pack",             true,  0.8 * (radius - thickness)),
+                padding_pack            = config_default("padding_pack",            true,  radius * 0.1),
+                opacity_ribbon          = config_default("opacity_ribbon",          true,  0.6),
+                opacity_fade            = config_default("opacity_fade",            true,  0.1),
+                label_font_size         = config_default("label_font_size",         true,  radius * 0.03),
+                label_spacing           = config_default("label_spacing",           true,  radius * 0.01),
+                label_wrap_length       = config_default("label_wrap_length",       true,  radius * 0.7),
+                label_relax_delta       = config_default("label_relax_delta",       true,  0.5),
+                label_relax_sleep       = config_default("label_relax_sleep",       true,  10),
+                transition_duration     = config_default("transition_duration",     true,  750);
+
+            var color_outer = d3.scaleOrdinal(d3[outer_colors] || d3_scale_chromatic[outer_colors]);
 
             that.tooltip_position = function() {
                 that.tooltip
@@ -187,7 +203,7 @@ function(
 
             var pie_outer = d3.pie()
                 .value(function(d) {
-                    return d.ribbon === ribbon_choice || ribbon_choice === "all" ? d.count : 0;
+                    return d.ribbon === ribbon_choice || ribbon_choice === "__ALL__" ? d.count : 0;
                 })
                 .sort(null);
 
@@ -227,7 +243,7 @@ function(
 
                 var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + that.number_format(count);
 
-                html += ribbon_choice === "all" ?
+                html += ribbon_choice === "__ALL__" ?
                     "<br>" + that.pct_label(pct) + " of total amount" :
                     "<br>" + ribbon_label + ": " + that.pct_label(pct_ribbon) + " of total amount";
 
@@ -430,6 +446,7 @@ function(
 
             // Based off of https://jsfiddle.net/thudfactor/HdwTH/
             function label_relax() {
+                console.log("label_relax()");
                 var adjusted = false;
                 label_text_g
                     .filter(function() {
@@ -455,11 +472,15 @@ function(
                                     rb = b.getBoundingClientRect();
 
                                 var overlap = ra.top - label_spacing < rb.bottom &&
-                                            rb.top - label_spacing < ra.bottom &&
-                                            ra.left - label_spacing < rb.right &&
-                                            rb.left - label_spacing < ra.right;
+                                              rb.top - label_spacing < ra.bottom &&
+                                              ra.left - label_spacing < rb.right &&
+                                              rb.left - label_spacing < ra.right;
 
-                                if(!overlap) return;
+                                // There seems to be "ghost" elements floating around (probably due to multiple updateView calls).
+                                // These ghost elements have ra and rb of all 0's. So my hacky solution to exclude these elements is to check for 0's...
+                                if(!overlap || ra.height === 0 && rb.height === 0) {
+                                    return;
+                                }
 
                                 adjusted = true;
 
@@ -499,7 +520,7 @@ function(
                 .sum(function(d) {
                     return _(d.data).chain()
                         .filter(function(v) {
-                            return v.ribbon === ribbon_choice || ribbon_choice === "all";
+                            return v.ribbon === ribbon_choice || ribbon_choice === "__ALL__";
                         })
                         .pluck("count")
                         .reduce(function(memo, num) {
@@ -588,7 +609,7 @@ function(
                     html;
 
 
-                if(ribbon_choice === "all") {
+                if(ribbon_choice === "__ALL__") {
                     html = inner_label + ": " + that.number_format(count) + " total" +
                         "<br>" + that.pct_label(pct) + " of total amount";
                 }
@@ -671,7 +692,7 @@ function(
 
             var pie_inner = d3.pie()
                 .value(function(d) {
-                    return d.ribbon === ribbon_choice || ribbon_choice === "all" ? d.count : 0;
+                    return d.ribbon === ribbon_choice || ribbon_choice === "__ALL__" ? d.count : 0;
                 })
                 .sort(null);
 
@@ -690,7 +711,7 @@ function(
 
                 var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + that.number_format(count);
 
-                html += ribbon_choice === "all" ?
+                html += ribbon_choice === "__ALL__" ?
                     "<br>" + that.pct_label(pct) + " of total amount -> " + inner_label :
                     "<br>" + that.pct_label(pct_ribbon) + " of total amount -> " + ribbon_label + " -> " + inner_label;
 
@@ -904,11 +925,11 @@ function(
                     .transition()
                     .duration(transition_duration)
                         .style("opacity", function(d) {
-                            return d.data.ribbon === ribbon_choice || ribbon_choice === "all" ? 1.0 : 0.0;
+                            return d.data.ribbon === ribbon_choice || ribbon_choice === "__ALL__" ? 1.0 : 0.0;
                         })
                         .on("end", function() {
                             d3.select(this).attr("visibility", function(d) {
-                                return d.data.ribbon === ribbon_choice || ribbon_choice === "all" ? "visible" : "hidden";
+                                return d.data.ribbon === ribbon_choice || ribbon_choice === "__ALL__" ? "visible" : "hidden";
                             });
                         });
 
@@ -1008,7 +1029,7 @@ function(
                     .sum(function(d) {
                         return _(d.data).chain()
                             .filter(function(v) {
-                                return v.ribbon === ribbon_choice || ribbon_choice === "all";
+                                return v.ribbon === ribbon_choice || ribbon_choice === "__ALL__";
                             })
                             .pluck("count")
                             .reduce(function(memo, num) {
