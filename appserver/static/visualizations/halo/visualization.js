@@ -99,7 +99,9 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                            "total": _(v).total("count")
 	                        }
 
-	                        if(inner) obj.inner = inner;
+	                        if(inner) {
+	                            obj.inner = inner;
+	                        }
 
 	                        return obj;
 	                })
@@ -130,16 +132,19 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	            });
 
 	            data.outer = _(raw_data.results).map(function(v, i) {
-	                v.count = parseFloat(v.count);
 	                v._index = i;
+	                v.count = parseFloat(v.count);
 
 	                return v;
 	            });
+
+	            var i = 0;
 
 	            data.inner = _(data.outer).chain()
 	                .groupBy("inner")
 	                .map(function(v, k) {
 	                    return {
+	                        "_index": i++,
 	                        "inner": k,
 	                        "data": v
 	                    };
@@ -196,25 +201,20 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 
 	            var color_outer = d3.scaleOrdinal(d3[outer_colors] || d3_scale_chromatic[outer_colors]);
 
-	            that.tooltip_position = function() {
+	            var number_format = d3.format(",d");
+
+	            function tooltip_position() {
 	                that.tooltip
 	                    .style("top", (d3.event.pageY - 10) + "px")
 	                    .style("left", (d3.event.pageX + 10) + "px");
 	            }
 
-	            String.prototype.capitalize = function() {
-	                return this.charAt(0).toUpperCase() + this.slice(1);
-	            }
-
-	            that.number_format = d3.format(",d");
-
-	            that.pct_label = function(pct) {
+	            function pct_label(pct) {
 	                return pct < 1 ? "<1%" : Math.round(pct) + "%";
 	            }
 
-	            that.get_translate = function(translate) {
-	                var match = /^translate\(([^,]+),(.+)\)/.exec(translate);
-	                return [parseFloat(match[1]), parseFloat(match[2])];
+	            String.prototype.capitalize = function() {
+	                return this.charAt(0).toUpperCase() + this.slice(1);
 	            }
 
 	            var svg = d3.select(that.el)
@@ -286,11 +286,11 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    pct = count / total * 100,
 	                    pct_ribbon = count / total_ribbon * 100;
 
-	                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + that.number_format(count);
+	                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + number_format(count);
 
 	                html += ribbon_choice === "__ALL__" ?
-	                    "<br>" + that.pct_label(pct) + " of total amount" :
-	                    "<br>" + ribbon_label + ": " + that.pct_label(pct_ribbon) + " of total amount";
+	                    "<br>" + pct_label(pct) + " of total amount" :
+	                    "<br>" + ribbon_label + ": " + pct_label(pct_ribbon) + " of total amount";
 
 	                if(d.data.outer_link) {
 	                    html += "<br><i>Click for more details</i>";
@@ -334,7 +334,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        return d.data.outer_link ? "pointer" : "";
 	                    })
 	                    .on("mouseover", mouseover_outer)
-	                    .on("mousemove", that.tooltip_position)
+	                    .on("mousemove", tooltip_position)
 	                    .on("mouseout", mouseout_default)
 	                    .on("click", function(d) {
 	                        var link = d.data.outer_link;
@@ -364,7 +364,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        return d.data.outer_link ? "pointer" : "";
 	                    })
 	                    .on("mouseover", mouseover_outer)
-	                    .on("mousemove", that.tooltip_position)
+	                    .on("mousemove", tooltip_position)
 	                    .on("mouseout", mouseout_default)
 	                    .on("click", function(d) {
 	                        var link = d.data.outer_link;
@@ -492,6 +492,12 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	            // Based off of https://jsfiddle.net/thudfactor/HdwTH/
 	            function label_relax() {
 	                console.log("label_relax()");
+
+	                function get_translate(translate) {
+	                    var match = /^translate\(([^,]+),(.+)\)/.exec(translate);
+	                    return [parseFloat(match[1]), parseFloat(match[2])];
+	                }
+
 	                var adjusted = false;
 	                label_text_g
 	                    .filter(function() {
@@ -529,8 +535,8 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 
 	                                adjusted = true;
 
-	                                var fa = that.get_translate(da.attr("transform")),
-	                                    fb = that.get_translate(db.attr("transform")),
+	                                var fa = get_translate(da.attr("transform")),
+	                                    fb = get_translate(db.attr("transform")),
 	                                    xa = fa[0],
 	                                    ya = fa[1],
 	                                    xb = fb[0],
@@ -549,7 +555,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        var g_for_line = label_text_g.filter(function(dd, ii) {
 	                            return i === ii;
 	                        });
-	                            y = that.get_translate(g_for_line.attr("transform"))[1];
+	                            y = get_translate(g_for_line.attr("transform"))[1];
 	                        return y;
 	                    });
 
@@ -623,9 +629,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                .data(bubble_inner(root).children)
 	                .enter()
 	                .append("g")
-	                    .attr("class", function(d) {
-	                        return "node_inner " + d.inner;
-	                    })
+	                    .attr("class", "node_inner")
 	                    .attr("transform", function(d) {
 	                        return "translate(" + [d.x, d.y] + ")";
 	                    })
@@ -635,7 +639,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                .append("defs")
 	                .append("clipPath")
 	                    .attr("id", function(d) {
-	                        return "clip_" + d.data.inner;
+	                        return "clip_" + d.data._index;
 	                    })
 	                .append("circle")
 	                    .attr("cx", 0)
@@ -655,15 +659,15 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 
 
 	                if(ribbon_choice === "__ALL__") {
-	                    html = inner_label + ": " + that.number_format(count) + " total" +
-	                        "<br>" + that.pct_label(pct) + " of total amount";
+	                    html = inner_label + ": " + number_format(count) + " total" +
+	                        "<br>" + pct_label(pct) + " of total amount";
 	                }
 	                else {
 	                    total_ribbon = _(data.stats.ribbon).findWhere({"ribbon": ribbon_choice}).total,
 	                    pct_ribbon = count / total_ribbon * 100;
 
-	                    html = inner_label + ": " + that.number_format(count) + " " + ribbon_choice +
-	                        "<br>" + that.pct_label(pct_ribbon) + " of " + ribbon_choice + " -> " + inner_label;
+	                    html = inner_label + ": " + number_format(count) + " " + ribbon_choice +
+	                        "<br>" + pct_label(pct_ribbon) + " of " + ribbon_choice + " -> " + inner_label;
 	                }
 
 	                if(d.data.data[0].inner_link) {
@@ -720,10 +724,10 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        return d.data.data[0].inner_link ? "pointer" : "";
 	                    })
 	                    .style("clip-path", function(d) {
-	                        return "url(#clip_" + d.data.inner + ")";
+	                        return "url(#clip_" + d.data._index + ")";
 	                    })
 	                    .on("mouseover", mouseover_image)
-	                    .on("mousemove", that.tooltip_position)
+	                    .on("mousemove", tooltip_position)
 	                    .on("mouseout", mouseout_default)
 	                    .on("click", function(d) {
 	                        var link = d.data.data[0].inner_link;
@@ -754,11 +758,11 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    pct = count / total * 100,
 	                    pct_ribbon = count / total_ribbon * 100;
 
-	                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + that.number_format(count);
+	                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + number_format(count);
 
 	                html += ribbon_choice === "__ALL__" ?
-	                    "<br>" + that.pct_label(pct) + " of total amount -> " + inner_label :
-	                    "<br>" + that.pct_label(pct_ribbon) + " of total amount -> " + ribbon_label + " -> " + inner_label;
+	                    "<br>" + pct_label(pct) + " of total amount -> " + inner_label :
+	                    "<br>" + pct_label(pct_ribbon) + " of total amount -> " + ribbon_label + " -> " + inner_label;
 
 	                that.tooltip
 	                    .style("visibility", "visible")
@@ -801,7 +805,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                .append("g")
 	                    .attr("class", "arc_inner")
 	                    .on("mouseover", mouseover_inner)
-	                    .on("mousemove", that.tooltip_position)
+	                    .on("mousemove", tooltip_position)
 	                    .on("mouseout", mouseout_default);
 
 	            function ribbon_data(data) {
@@ -873,7 +877,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    inner_label = d.data.inner.capitalize(),
 	                    count = d.data.count;
 
-	                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + that.number_format(count);
+	                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + number_format(count);
 
 	                that.tooltip
 	                    .style("visibility", "visible")
@@ -918,7 +922,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    })
 	                    .on("mouseover", mouseover_ribbon)
 	                    .on("mouseout", mouseout_default)
-	                    .on("mousemove", that.tooltip_position)
+	                    .on("mousemove", tooltip_position)
 	                    .each(function(d) {
 	                        this._current = d;
 	                    });
