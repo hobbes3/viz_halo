@@ -70,6 +70,9 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    .attr("id", "tooltip");
 
 	            this.$el.append('<div id="ribbon_controls"><label>Choose ribbon types: </label><select id="ribbon_dropdown"><option value="__ALL__">All</option></select></div>');
+
+	            this.timer_label_relax;
+	            this.timer_auto_transition;
 	        },
 
 	        // Optionally implement to format data returned from search.
@@ -165,6 +168,8 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	            }
 
 	            this.$el.find("svg").remove();
+	            clearTimeout(that.timer_label_relax);
+	            clearTimeout(that.timer_auto_transition);
 
 	            $("#ribbon_dropdown").val("__ALL__")
 
@@ -202,10 +207,10 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                label_font_size         = config_default("label_font_size",         true,  radius * 0.03),
 	                label_spacing           = config_default("label_spacing",           true,  radius * 0.01),
 	                label_wrap_length       = config_default("label_wrap_length",       true,  radius * 0.7),
-	                inner_labels            = config_default("inner_labels",            false, "on"),
 	                inner_labels_scale      = config_default("inner_labels_scale",      true,  0.9),
 	                label_relax_delta       = config_default("label_relax_delta",       true,  0.5),
 	                label_relax_sleep       = config_default("label_relax_sleep",       true,  10),
+	                auto_transition         = config_default("auto_transition",         true,  0),
 	                transition_duration     = config_default("transition_duration",     true,  750);
 
 	            var color_outer = d3.scaleOrdinal(d3[outer_colors] || d3_scale_chromatic[outer_colors]);
@@ -421,46 +426,6 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        this._current = d;
 	                    });
 
-	            var label_text_g = label_group
-	                .append("g")
-	                    .attr("class", "label-text-group")
-	                    .attr("transform", function(d) {
-	                        var c = arc_outer.centroid(d),
-	                            mid_angle = Math.atan2(c[1], c[0]),
-	                            x = Math.cos(mid_angle) * radius_label,
-	                            sign = (x > 0) ? 1 : -1,
-	                            label_x = x + (2 * sign),
-	                            label_y = Math.sin(mid_angle) * radius_label;
-	                        return "translate(" + [label_x, label_y] + ")";
-	                    })
-	                    .each(function(d) {
-	                        this._current = d;
-	                    });
-
-	            var label_text = label_text_g
-	                .append("text")
-	                    .attr("x", 0)
-	                    .attr("y", 0)
-	                    .attr("dy", "0em")
-	                    .attr("text-anchor", function (d) {
-	                        var c = arc_outer.centroid(d),
-	                            mid_angle = Math.atan2(c[1], c[0]),
-	                            x = Math.cos(mid_angle) * radius_label;
-	                        return (x > 0) ? "start" : "end";
-	                    })
-	                    .attr("class", "label-text")
-	                    .attr("dominant-baseline", "middle")
-	                    .style("font-size", label_font_size)
-	                    .text(function (d) {
-	                        return d.data.outer;
-	                    })
-	                    .each(function(d) {
-	                        this._current = d;
-	                    })
-	                    .call(label_wrap, label_wrap_length);
-
-	            label_relax();
-
 	            // https://bl.ocks.org/mbostock/7555321
 	            function label_wrap(text, width) {
 	                text.each(function() {
@@ -500,7 +465,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 
 	            // Based off of https://jsfiddle.net/thudfactor/HdwTH/
 	            function label_relax() {
-	                console.log("label_relax()");
+	                //console.log("label_relax()");
 
 	                function get_translate(translate) {
 	                    var match = /^translate\(([^,]+),(.+)\)/.exec(translate);
@@ -568,9 +533,49 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        return y;
 	                    });
 
-	                    setTimeout(label_relax, label_relax_sleep)
+	                    that.timer_label_relax = setTimeout(label_relax, label_relax_sleep)
 	                }
 	            }
+
+	            var label_text_g = label_group
+	                .append("g")
+	                    .attr("class", "label-text-group")
+	                    .attr("transform", function(d) {
+	                        var c = arc_outer.centroid(d),
+	                            mid_angle = Math.atan2(c[1], c[0]),
+	                            x = Math.cos(mid_angle) * radius_label,
+	                            sign = (x > 0) ? 1 : -1,
+	                            label_x = x + (2 * sign),
+	                            label_y = Math.sin(mid_angle) * radius_label;
+	                        return "translate(" + [label_x, label_y] + ")";
+	                    })
+	                    .each(function(d) {
+	                        this._current = d;
+	                    });
+
+	            var label_text = label_text_g
+	                .append("text")
+	                    .attr("x", 0)
+	                    .attr("y", 0)
+	                    .attr("dy", "0em")
+	                    .attr("text-anchor", function (d) {
+	                        var c = arc_outer.centroid(d),
+	                            mid_angle = Math.atan2(c[1], c[0]),
+	                            x = Math.cos(mid_angle) * radius_label;
+	                        return (x > 0) ? "start" : "end";
+	                    })
+	                    .attr("class", "label-text")
+	                    .attr("dominant-baseline", "middle")
+	                    .style("font-size", label_font_size)
+	                    .text(function (d) {
+	                        return d.data.outer;
+	                    })
+	                    .each(function(d) {
+	                        this._current = d;
+	                    })
+	                    .call(label_wrap, label_wrap_length);
+
+	            label_relax();
 
 	            var bubble_inner = d3.pack()
 	                .size([2 * radius_pack, 2 * radius_pack])
@@ -754,7 +759,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    .attr("alignment-baseline", "middle")
 	                    .attr("text-anchor", "middle")
 	                    .attr("opacity", 1.0)
-	                    .attr("visibility", inner_labels === "on" ? "visible" : "hidden")
+	                    .attr("visibility", inner_labels_scale > 0 ? "visible" : "hidden")
 	                    .text(function(d) {
 	                        return d.data.inner;
 	                    })
@@ -993,6 +998,21 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        this._current = d;
 	                    });
 
+
+	            function ribbon_controls_choose_next() {
+	                //console.log("ribbon_controls_choose_next()");
+
+	                var n = $("#ribbon_controls option").length,
+	                    i = $("#ribbon_controls option:selected").index(),
+	                    x = i + 1 >= n ? 0 : i + 1;
+
+	                $("#ribbon_controls option:eq(" + x + ")").prop("selected", true).change();
+	            }
+
+	            if(auto_transition > 0) {
+	                that.timer_auto_transition = setInterval(ribbon_controls_choose_next, auto_transition);
+	            }
+
 	            $("#ribbon_dropdown").on("change", function() {
 	                that.tooltip.style("visibility", "hidden");
 	                path_outer_g.style("opacity", 1.0);
@@ -1206,10 +1226,10 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        .attr("opacity", function(d) {
 	                            return d.value === 0 ? 0.0 : 1.0;
 	                        })
-	                        .attr("visibility", inner_labels === "on" ? "visible" : "hidden")
+	                        .attr("visibility", inner_labels_scale > 0? "visible" : "hidden")
 	                        .on("end", function() {
 	                            d3.select(this).attr("visibility", function(d) {
-	                                return d.value === 0 || inner_labels === "off" ? "hidden" : "visible";
+	                                return d.value === 0 || inner_labels_scale === 0 ? "hidden" : "visible";
 	                            });
 	                        });
 	            });

@@ -5,12 +5,11 @@
   </search>
   <row>
     <panel>
-      <title>Halo viz</title>
+      <title>Halo visualization</title>
       <viz type="viz_halo.halo">
+        <title>With auto transition on</title>
         <search base="base"></search>
-        <option name="viz_halo.halo.inner_label_aspect_ratio">1</option>
-        <option name="viz_halo.halo.inner_labels">on</option>
-        <option name="viz_halo.halo.inner_labels_aspect_ratio">6</option>
+        <option name="viz_halo.halo.auto_transition">2000</option>
         <option name="viz_halo.halo.label_font_size">15</option>
         <option name="viz_halo.halo.outer_colors">schemeDark2</option>
         <option name="viz_halo.halo.ribbon_radius_cp_offset">70</option>

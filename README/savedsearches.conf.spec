@@ -15,6 +15,6 @@ display.visualizations.custom.viz_halo.halo.label_spacing = <float>
 display.visualizations.custom.viz_halo.halo.label_wrap_length = <float>
 display.visualizations.custom.viz_halo.halo.label_relax_delta = <float>
 display.visualizations.custom.viz_halo.halo.label_relax_sleep = <float>
-display.visualizations.custom.viz_halo.halo.inner_labels = <string>
 display.visualizations.custom.viz_halo.halo.inner_labels_scale = <float>
 display.visualizations.custom.viz_halo.halo.transition_duration = <float>
+display.visualizations.custom.viz_halo.halo.auto_transition = <float>
