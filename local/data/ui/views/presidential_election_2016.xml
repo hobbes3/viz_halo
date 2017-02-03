@@ -1,6 +1,5 @@
 <dashboard>
   <label>2016 Presidential Election</label>
-  <description>Independent Expenditures</description>
   <search id="base">
     <query>| inputlookup clinton_trump.csv
 | eval outer='committee.name'
@@ -15,17 +14,19 @@
   </search>
   <row>
     <panel>
+      <title>Independent Expenditures spent on either Clinton or Trump</title>
       <viz type="viz_halo.halo">
         <search base="base"></search>
-        <option name="height">1400</option>
+        <option name="height">825</option>
         <option name="viz_halo.halo.inner_labels">off</option>
         <option name="viz_halo.halo.outer_colors">schemeCategory20b</option>
-        <option name="viz_halo.halo.transition_duration">2000</option>
+        <option name="viz_halo.halo.transition_duration">1300</option>
       </viz>
     </panel>
   </row>
   <row>
     <panel>
+      <title>Source data</title>
       <table>
         <search base="base"></search>
         <option name="count">50</option>

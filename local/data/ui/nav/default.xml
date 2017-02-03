@@ -1,5 +1,5 @@
 <nav search_view="search" color="#d62728"> 
-  <view name="halo_docs" default="true"/>
+  <view name="halo_doc" default="true"/>
   <view name="simple_halo_example" />
   <view name="presidential_election_2016" />
 </nav>
