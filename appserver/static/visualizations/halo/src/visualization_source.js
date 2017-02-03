@@ -1090,7 +1090,7 @@ function(
                     .transition()
                     .duration(transition_duration)
                         .attr("r", function(d) {
-                            return d.r - thickness;
+                            return Math.max(d.r - thickness, 0);
                         });
 
                 image.data(bubble_inner(root).children)
@@ -1103,10 +1103,10 @@ function(
                             return thickness - d.r;
                         })
                         .attr("width", function(d) {
-                            return 2 * (d.r - thickness);
+                            return Math.max(2 * (d.r - thickness), 0);
                         })
                         .attr("height", function(d) {
-                            return 2 * (d.r - thickness);
+                            return Math.max(2 * (d.r - thickness), 0);
                         });
 
             });
