@@ -1,4 +1,6 @@
 <dashboard>
+  <label>2016 Presidential Election</label>
+  <description>Independent Expenditures</description>
   <search id="base">
     <query>| inputlookup clinton_trump.csv
 | eval outer='committee.name'
@@ -10,15 +12,15 @@
 | eval inner_link="https://beta.fec.gov/data/candidate/".candidate_id."/?cycle=2016&amp;election_full=true"
 | eval inner_img="/static/app/viz_halo/".candidate."_head.jpg"
 | table outer* ribbon* inner* count</query>
-    <earliest>$earliest$</earliest>
-    <latest>$latest$</latest>
-    <sampleRatio>1</sampleRatio>
   </search>
   <row>
     <panel>
       <viz type="viz_halo.halo">
         <search base="base"></search>
         <option name="height">1400</option>
+        <option name="viz_halo.halo.inner_labels">off</option>
+        <option name="viz_halo.halo.outer_colors">schemeCategory20b</option>
+        <option name="viz_halo.halo.transition_duration">2000</option>
       </viz>
     </panel>
   </row>

@@ -1,6 +1,15 @@
 [views/presidential_election_2016]
-version = 6.5.1
-modtime = 1485948488.388733000
+version = 6.5.2
+modtime = 1486118355.607469000
 
 [visualizations/halo]
 export = system
+
+[views/simple_halo_example]
+owner = admin
+version = 6.5.2
+modtime = 1486117006.126418000
+
+[nav/default]
+version = 6.5.2
+modtime = 1486116794.433388000

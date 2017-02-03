@@ -157,6 +157,8 @@ function(
                 label_font_size         = config_default("label_font_size",         true,  radius * 0.03),
                 label_spacing           = config_default("label_spacing",           true,  radius * 0.01),
                 label_wrap_length       = config_default("label_wrap_length",       true,  radius * 0.7),
+                inner_labels            = config_default("inner_labels",            false, "on"),
+                inner_labels_scale      = config_default("inner_labels_scale",      true,  0.9),
                 label_relax_delta       = config_default("label_relax_delta",       true,  0.5),
                 label_relax_sleep       = config_default("label_relax_sleep",       true,  10),
                 transition_duration     = config_default("transition_duration",     true,  750);
@@ -610,7 +612,7 @@ function(
                         return d.r - thickness;
                     });
 
-            function mouseover_image(d) {
+            function mouseover_center(d) {
                 if(animation) return;
 
                 var inner_label = d.data.inner.capitalize(),
@@ -688,7 +690,7 @@ function(
                     .style("clip-path", function(d) {
                         return "url(#clip_" + d.data._index + ")";
                     })
-                    .on("mouseover", mouseover_image)
+                    .on("mouseover", mouseover_center)
                     .on("mousemove", tooltip_position)
                     .on("mouseout", mouseout_default)
                     .on("click", function(d) {
@@ -698,6 +700,48 @@ function(
                             window.open(link, "_blank");
                         }
                     });
+
+            var inner_label_text = node_inner_g
+                .append("text")
+                    .attr("class", "label-inner")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("alignment-baseline", "middle")
+                    .attr("text-anchor", "middle")
+                    .attr("opacity", 1.0)
+                    .attr("visibility", inner_labels === "on" ? "visible" : "hidden")
+                    .text(function(d) {
+                        return d.data.inner;
+                    })
+                    .on("mouseover", mouseover_center)
+                    .on("mousemove", tooltip_position)
+                    .on("mouseout", mouseout_default)
+                    .on("click", function(d) {
+                        var link = d.data.data[0].inner_link;
+
+                        if(link) {
+                            window.open(link, "_blank");
+                        }
+                    });
+
+            function inner_label_resize(d) {
+                var bb = this.getBBox();
+
+                if(bb.width === 0 && bb.height === 0) {
+                    return "";
+                }
+
+                var r = d.r - thickness,
+                    h = 2 * r / bb.height,
+                    w = 2 * r / bb.width,
+                    s = w < h ? w : h,
+                    s = s * inner_labels_scale;
+
+                return "scale(" + s + "," + s + ")";
+            }
+
+            node_inner_g.selectAll("text.label-inner")
+                .attr("transform", inner_label_resize)
 
             var arc_inner = d3.arc();
 
@@ -1049,7 +1093,8 @@ function(
                             .value();
                     });
 
-                node_inner_g.data(bubble_inner(root).children)
+                node_inner_g
+                    .data(bubble_inner(root).children)
                     .transition()
                     .duration(transition_duration)
                         .attr("transform", function(d) {
@@ -1109,6 +1154,19 @@ function(
                             return Math.max(2 * (d.r - thickness), 0);
                         });
 
+                inner_label_text.data(bubble_inner(root).children)
+                    .transition()
+                    .duration(transition_duration)
+                        .attr("transform", inner_label_resize)
+                        .attr("opacity", function(d) {
+                            return d.value === 0 ? 0.0 : 1.0;
+                        })
+                        .attr("visibility", inner_labels === "on" ? "visible" : "hidden")
+                        .on("end", function() {
+                            d3.select(this).attr("visibility", function(d) {
+                                return d.value === 0 || inner_labels === "off" ? "hidden" : "visible";
+                            });
+                        });
             });
         },
 

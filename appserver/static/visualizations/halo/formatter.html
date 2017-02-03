@@ -5,109 +5,109 @@
         </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Width</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.width"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The canvas width of the halo viz. Increase this and/or panel width/height if you see clipping.<br/>
-                Defaults to <code>width = this.$el.width() * 0.8</code> (ie 80% of the panel width).
-            </div>
+        <label class="control-label">Width</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.width"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The canvas width of the halo viz. Increase this and/or panel width/height if you see clipping.<br/>
+            Defaults to <code>width = this.$el.width() * 0.8</code> (ie 80% of the panel width).
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Height</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.height"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The canvas height of the halo viz. Increase this and/or panel width/height if you see clipping.<br/>
-                Defaults to <code>height = width * 0.8</code>.
-            </div>
+        <label class="control-label">Height</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.height"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The canvas height of the halo viz. Increase this and/or panel width/height if you see clipping.<br/>
+            Defaults to <code>height = width * 0.8</code>.
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Radius</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.radius"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The outer radius of the halo viz.<br/>
-                Defaults to <code>radius = width / 2 * 0.55</code>.
-            </div>
+        <label class="control-label">Radius</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.radius"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The outer radius of the halo viz.<br/>
+            Defaults to <code>radius = width / 2 * 0.55</code>.
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Label Radius</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.radius_label"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The radius to the labels from the center of the halo viz.<br/>
-                Defaults to <code>radius_label = radius * 1.1</code> (ie 10% further from the outer ring radius).
-            </div>
+        <label class="control-label">Label Radius</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.radius_label"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The radius to the labels from the center of the halo viz.<br/>
+            Defaults to <code>radius_label = radius * 1.1</code> (ie 10% further from the outer ring radius).
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Ring Thickness</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.thickness"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The thickness of the outer and inner rings.<br/>
-                Defaults to <code>thickness = radius * 0.07</code>.
-            </div>
+        <label class="control-label">Ring Thickness</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.thickness"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The thickness of the outer and inner rings.<br/>
+            Defaults to <code>thickness = radius * 0.07</code>.
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Packing Radius</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.radius_pack"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The maximum allowed radius for circle packing of the inner rings (see <a href="https://github.com/d3/d3-hierarchy/blob/master/README.md#pack" target="_blank">d3.pack()</a>).<br/>
-                Defaults to <code>radius_pack = 0.8 * (radius - thickness)</code> (ie 80% of the inner radius of the outer ring).
-            </div>
+        <label class="control-label">Packing Radius</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.radius_pack"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The maximum allowed radius for circle packing of the inner rings (see <a href="https://github.com/d3/d3-hierarchy/blob/master/README.md#pack" target="_blank">d3.pack()</a>).<br/>
+            Defaults to <code>radius_pack = 0.8 * (radius - thickness)</code> (ie 80% of the inner radius of the outer ring).
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Packing Padding</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.padding_pack"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The spacing/padding between inner rings.<br/>
-                Defaults to <code>padding_pack = radius * 0.1</code>.
-            </div>
+        <label class="control-label">Packing Padding</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.padding_pack"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The spacing/padding between inner rings.<br/>
+            Defaults to <code>padding_pack = radius * 0.1</code>.
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Ribbon Curvature</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.ribbon_radius_cp_offset"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The curvature of the ribbon from the inner rings. Setting to 0 disable curvature (meaning the ribbons will be straight lines from the inner rings to the outer ring).<br/>
-                Defaults to <code>ribbon_radius_cp_offset = radius * 0.2</code>.
-            </div>
+        <label class="control-label">Ribbon Curvature</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.ribbon_radius_cp_offset"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The curvature of the ribbon from the inner rings. Setting to 0 disable curvature (meaning the ribbons will be straight lines from the inner rings to the outer ring).<br/>
+            Defaults to <code>ribbon_radius_cp_offset = radius * 0.2</code>.
+        </div>
     </div>
 </form>
 <form class="splunk-formatter-section" section-label="Color">
     <div class="control-group">
-     	    <label class="control-label">Outer Ring Colors</label>
-    		<div class="controls controls-block">
-                <splunk-select name="{{VIZ_NAMESPACE}}.outer_colors" value="schemeCategory20b">
-                    <option value="schemeCategory10">schemeCategory10</option>
-                    <option value="schemeCategory20">schemeCategory20</option>
-                    <option value="schemeCategory20b">schemeCategory20b</option>
-                    <option value="schemeCategory20c">schemeCategory20c</option>
-                    <option value="schemeAccent">schemeAccent</option>
-                    <option value="schemeDark2">schemeDark2</option>
-                    <option value="schemePaired">schemePaired</option>
-                    <option value="schemePastel1">schemePastel1</option>
-                    <option value="schemePastel2">schemePastel2</option>
-                    <option value="schemeSet1">schemeSet1</option>
-                    <option value="schemeSet2">schemeSet2</option>
-                    <option value="schemeSet3">schemeSet3</option>
-                </splunk-select>
-            </div>
-            <div class="formatter-info">
-                The d3 category scale for the color of the outer rings. More info (and actual colors) found at <a href="https://github.com/d3/d3-scale/blob/master/README.md#category-scales" target="_blank">d3 category scales</a> and <a href="https://github.com/d3/d3-scale-chromatic#categorical" target="_blank">d3 chromatic category scales</a>.
-                Defaults to <code>outer_colors = "schemeCategory20b"</code>.
-            </div>
+        <label class="control-label">Outer Ring Colors</label>
+        <div class="controls controls-block">
+            <splunk-select name="{{VIZ_NAMESPACE}}.outer_colors" value="schemeCategory20b">
+                <option value="schemeCategory10">schemeCategory10</option>
+                <option value="schemeCategory20">schemeCategory20</option>
+                <option value="schemeCategory20b">schemeCategory20b</option>
+                <option value="schemeCategory20c">schemeCategory20c</option>
+                <option value="schemeAccent">schemeAccent</option>
+                <option value="schemeDark2">schemeDark2</option>
+                <option value="schemePaired">schemePaired</option>
+                <option value="schemePastel1">schemePastel1</option>
+                <option value="schemePastel2">schemePastel2</option>
+                <option value="schemeSet1">schemeSet1</option>
+                <option value="schemeSet2">schemeSet2</option>
+                <option value="schemeSet3">schemeSet3</option>
+            </splunk-select>
+        </div>
+        <div class="formatter-info">
+            The d3 category scale for the color of the outer rings. More info (and actual colors) found at <a href="https://github.com/d3/d3-scale/blob/master/README.md#category-scales" target="_blank">d3 category scales</a> and <a href="https://github.com/d3/d3-scale-chromatic#categorical" target="_blank">d3 chromatic category scales</a>.
+            Defaults to <code>outer_colors = "schemeCategory20b"</code>.
+        </div>
     </div>
 </form>
 <form class="splunk-formatter-section" section-label="Opacity">
@@ -117,24 +117,24 @@
         </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Ribbon Opacity</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.opacity_ribbon"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The opacity of the ribbons (while not mouseover).<br/>
-                Defaults to <code>opacity_ribbon = 0.6</code>.
-            </div>
+        <label class="control-label">Ribbon Opacity</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.opacity_ribbon"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The opacity of the ribbons (while not mouseover).<br/>
+            Defaults to <code>opacity_ribbon = 0.6</code>.
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Faded Opacity</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.opacity_fade"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The opacity of all unrelated objects during a mouseover.<br/>
-                Defaults to <code>opacity_fade = 0.1</code>.
-            </div>
+        <label class="control-label">Faded Opacity</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.opacity_fade"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The opacity of all unrelated objects during a mouseover.<br/>
+            Defaults to <code>opacity_fade = 0.1</code>.
+        </div>
     </div>
 </form>
 <form class="splunk-formatter-section" section-label="Label">
@@ -144,34 +144,57 @@
         </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Label Font Size</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.label_font_size"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The font size of the labels.<br/>
-                Defaults to <code>label_font_size = radius * 0.03</code>.
-            </div>
+        <label class="control-label">Outer Label Font Size</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.label_font_size"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The font size of the labels.<br/>
+            Defaults to <code>label_font_size = radius * 0.03</code>.
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Label Spacing</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.label_spacing"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The spacing between the labels and the lines from the outer rings.<br/>
-                Defaults to <code>label_spacing = radius * 0.01</code>.
-            </div>
+        <label class="control-label">Outer Label Spacing</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.label_spacing"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The spacing between the labels and the lines from the outer rings.<br/>
+            Defaults to <code>label_spacing = radius * 0.01</code>.
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Label Wrap Length</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.label_wrap_length"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The maximum width of the labels before line wrapping is forced.<br/>
-                Defaults to <code>label_wrap_length = radius * 0.7</code>.
-            </div>
+        <label class="control-label">Outer Label Wrap Length</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.label_wrap_length"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The maximum width of the labels before line wrapping is forced.<br/>
+            Defaults to <code>label_wrap_length = radius * 0.7</code>.
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Inner Labels</label>
+        <div class="controls controls-block">
+            <splunk-select name="{{VIZ_NAMESPACE}}.inner_labels" value="on">
+                <option value="on">On</option>
+                <option value="off">Off</option>
+            </splunk-select>
+        </div>
+        <div class="formatter-info">
+            Show or hide the inner labels.
+            Defaults to <code>inner_labels = "on"</code>.
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Inner Label Aspect Ratio</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.inner_labels_scale"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The scale (from 0 to 1) on how much "space" the inner labels should take up inside.<br/>
+            Defaults to <code>inner_label_scale = 0.9</code>.
+        </div>
     </div>
 </form>
 <form class="splunk-formatter-section" section-label="Animation">
@@ -181,34 +204,34 @@
         </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Label De-Collison Delta</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.label_relax_delta"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The increment (how far up/down) the labels move during a cycle of the label de-collison check.<br/>
-                Defaults to <code>label_relax_delta = 0.5</code>.
-            </div>
+        <label class="control-label">Transition duration</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.transition_duration"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The total time (in millisecond) the transition will take during an animation (ie changing ribbon types).<br/>
+            Defaults to <code>transition_duration = 750</code>.
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Label De-Collison Sleep</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.label_relax_sleep"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                How much to wait (in milliseconds) before executing another cycle of the label de-collison check.<br/>
-                Defaults to <code>label_relax_sleep = 10</code>.
-            </div>
+        <label class="control-label">Label De-Collison Delta</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.label_relax_delta"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            The increment (how far up/down) the labels move during a cycle of the label de-collison check.<br/>
+            Defaults to <code>label_relax_delta = 0.5</code>.
+        </div>
     </div>
     <div class="control-group">
-     	    <label class="control-label">Transition duration</label>
-    		<div class="controls controls-block">
-                <splunk-text-input name="{{VIZ_NAMESPACE}}.transition_duration"></splunk-text-input>
-            </div>
-            <div class="formatter-info">
-                The total time (in millisecond) the transition will take during an animation (ie changing ribbon types).<br/>
-                Defaults to <code>transition_duration = 750</code>.
-            </div>
+        <label class="control-label">Label De-Collison Sleep</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.label_relax_sleep"></splunk-text-input>
+        </div>
+        <div class="formatter-info">
+            How much to wait (in milliseconds) before executing another cycle of the label de-collison check.<br/>
+            Defaults to <code>label_relax_sleep = 10</code>.
+        </div>
     </div>
 </form>
     <!--
