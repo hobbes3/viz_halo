@@ -18,7 +18,7 @@
       <viz type="viz_halo.halo">
         <search base="base"></search>
         <option name="height">825</option>
-        <option name="viz_halo.halo.inner_labels">off</option>
+        <option name="viz_halo.halo.inner_labels_scale">0</option>
         <option name="viz_halo.halo.transition_duration">1300</option>
       </viz>
     </panel>
