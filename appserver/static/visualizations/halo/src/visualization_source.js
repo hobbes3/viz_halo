@@ -126,11 +126,18 @@ function(
             function config_default(setting, is_float, default_value) {
                 var value = config[that.getPropertyNamespaceInfo().propertyNamespace + setting];
 
-                if(value !== undefined && is_float) {
-                    value = parseFloat(value);
+                if(value === undefined) {
+                    return default_value;
+                }
+                else {
+                    value = value.trim();
                 }
 
-                return value === undefined ? default_value : value;
+                if(value === "") {
+                    return default_value;
+                }
+
+                return is_float ? parseFloat(value) : value;
             }
 
             var ribbon_choice = "__ALL__",
