@@ -82,12 +82,24 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                return false;
 	            }
 
+	            var fields = _(raw_data.fields).pluck("name"),
+	                required_fields = ["count", "inner", "outer", "ribbon", "ribbon_color"],
+	                missing_fields = _(required_fields).difference(fields);
+
+	            if(missing_fields.length > 0) {
+	                var s = missing_fields.length > 1 ? "s" : "";
+
+	                throw new SplunkVisualizationBase.VisualizationError(
+	                    "Missing the following field" + s + ": " + missing_fields.join(", ")
+	                );
+	            }
+
 	            _.mixin({
 	                "total": function(data, key) {
 	                    return _(data).chain()
 	                        .pluck(key)
 	                        .reduce(function(memo, num) {
-	                            return memo + parseFloat(num);
+	                            return memo + num;
 	                        }, 0)
 	                        .value();
 	                }
@@ -110,6 +122,25 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                })
 	                .value();
 	            };
+
+	            raw_data.results = _(raw_data.results).map(function(o) {
+	                _(required_fields).each(function(k) {
+	                    o[k] = SplunkVisualizationUtils.escapeHtml(o[k])
+	                });
+
+	                var num = parseFloat(o.count);
+
+	                if(isNaN(num)) {
+	                    throw new SplunkVisualizationBase.VisualizationError(
+	                        "All values of the field count must be numeric. Encountered the value: " + o.count
+	                    );
+	                }
+	                else {
+	                    o.count = num;
+	                }
+
+	                return o;
+	            });
 
 	            var data = {};
 
@@ -136,7 +167,6 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 
 	            data.outer = _(raw_data.results).map(function(v, i) {
 	                v._index = i;
-	                v.count = parseFloat(v.count);
 
 	                return v;
 	            });
