@@ -717,6 +717,14 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    });
 	            }
 
+	            function click_center(d) {
+	                var link = d.data.data[0].inner_link;
+
+	                if(link) {
+	                    window.open(link, "_blank");
+	                }
+	            }
+
 	            var image = node_inner_g
 	                .append("image")
 	                    .attr("x", function(d) {
@@ -743,13 +751,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    .on("mouseover", mouseover_center)
 	                    .on("mousemove", tooltip_position)
 	                    .on("mouseout", mouseout_default)
-	                    .on("click", function(d) {
-	                        var link = d.data.data[0].inner_link;
-
-	                        if(link) {
-	                            window.open(link, "_blank");
-	                        }
-	                    });
+	                    .on("click", click_center);
 
 	            var inner_label_text = node_inner_g
 	                .append("text")
@@ -763,16 +765,13 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    .text(function(d) {
 	                        return d.data.inner;
 	                    })
+	                    .style("cursor", function(d) {
+	                        return d.data.data[0].inner_link ? "pointer" : "";
+	                    })
 	                    .on("mouseover", mouseover_center)
 	                    .on("mousemove", tooltip_position)
 	                    .on("mouseout", mouseout_default)
-	                    .on("click", function(d) {
-	                        var link = d.data.data[0].inner_link;
-
-	                        if(link) {
-	                            window.open(link, "_blank");
-	                        }
-	                    });
+	                    .on("click", click_center);
 
 	            function inner_label_resize(d) {
 	                var bb = this.getBBox();
@@ -792,6 +791,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 
 	            node_inner_g.selectAll("text.label-inner")
 	                .attr("transform", inner_label_resize)
+	                .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black");
 
 	            var arc_inner = d3.arc();
 
@@ -1228,9 +1228,11 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        })
 	                        .attr("visibility", inner_labels_scale > 0? "visible" : "hidden")
 	                        .on("end", function() {
-	                            d3.select(this).attr("visibility", function(d) {
-	                                return d.value === 0 || inner_labels_scale === 0 ? "hidden" : "visible";
-	                            });
+	                            d3.select(this)
+	                                .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black")
+	                                .attr("visibility", function(d) {
+	                                    return d.value === 0 || inner_labels_scale === 0 ? "hidden" : "visible";
+	                                });
 	                        });
 	            });
 	        },
