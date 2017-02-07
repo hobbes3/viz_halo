@@ -234,7 +234,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                padding_pack            = config_default("padding_pack",            true,  radius * 0.1),
 	                opacity_ribbon          = config_default("opacity_ribbon",          true,  0.6),
 	                opacity_fade            = config_default("opacity_fade",            true,  0.1),
-	                label_font_size         = config_default("label_font_size",         true,  radius * 0.03),
+	                label_font_size         = config_default("label_font_size",         true,  radius * 0.04),
 	                label_spacing           = config_default("label_spacing",           true,  radius * 0.01),
 	                label_wrap_length       = config_default("label_wrap_length",       true,  radius * 0.7),
 	                inner_labels_scale      = config_default("inner_labels_scale",      true,  0.9),

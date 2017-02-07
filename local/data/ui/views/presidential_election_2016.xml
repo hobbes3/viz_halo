@@ -24,7 +24,7 @@
       <title>Independent Expenditures spent on either Clinton or Trump</title>
       <viz type="viz_halo.halo">
         <search base="base"></search>
-        <option name="height">825</option>
+        <option name="height">750</option>
         <option name="viz_halo.halo.inner_labels_scale">0</option>
         <option name="viz_halo.halo.outer_colors">schemeCategory20b</option>
         <option name="viz_halo.halo.transition_duration">1300</option>
