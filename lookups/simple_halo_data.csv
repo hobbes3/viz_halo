@@ -1,9 +1,25 @@
-outer,ribbon,ribbon_color,inner,count
-amy,hates,#d62728,apple,1
-bob,loves,#2ca02c,apple,2
-alice,loves,#2ca02c,apple,3
-doug,hates,#d62728,pear,4
-tom,loves,#2ca02c,orange,2
-mike,hates,#d62728,pear,3
-don,loves,#2ca02c,orange,5
-adam,hates,#d62728,orange,3
+count,inner,outer,ribbon,"ribbon_color"
+2,Mario,Goomba,hurts,"#d62728"
+3,Peach,Goomba,hurts,"#d62728"
+2,Luigi,Lakitu,hurts,"#d62728"
+3,Mario,"Koopa Troopa",hurts,"#d62728"
+1,Mario,"Koopa Troopa",helps,"#17becf"
+4,Mario,Boos,hurts,"#d62728"
+2,Mario,"Shy Guy",hurts,"#d62728"
+1,Luigi,"Shy Guy",helps,"#17becf"
+3,Luigi,"Bullet Bill",hurts,"#d62728"
+5,Peach,"Bob-omb",hurts,"#d62728"
+2,Mario,"Bob-omb",helps,"#17becf"
+1,Luigi,"Bob-omb",helps,"#17becf"
+3,Toad,"Buzzy Beetle",hurts,"#d62728"
+3,Toad,Blooper,hurts,"#d62728"
+3,Mario,Bowser,helps,"#17becf"
+14,Mario,Bowser,hurts,"#d62728"
+12,Luigi,Bowser,hurts,"#d62728"
+9,Toad,Bowser,hurts,"#d62728"
+9,Peach,Bowser,hurts,"#d62728"
+4,Toad,"Hammer Bros",hurts,"#d62728"
+3,Peach,"Hammer Bros",hurts,"#d62728"
+10,Toad,Wiggler,hurts,"#d62728"
+4,Mario,Wiggler,helps,"#17becf"
+23,Luigi,Wiggler,helps,"#17becf"

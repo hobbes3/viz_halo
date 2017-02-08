@@ -7,15 +7,17 @@
     <panel>
       <title>Halo visualization</title>
       <viz type="viz_halo.halo">
-        <title>With auto transition on</title>
+        <title>With auto transition on and stop auto</title>
         <search base="base"></search>
-        <option name="viz_halo.halo.auto_transition">2000</option>
+        <option name="viz_halo.halo.auto_transition">0</option>
         <option name="viz_halo.halo.label_font_size">15</option>
         <option name="viz_halo.halo.outer_colors">schemeDark2</option>
         <option name="viz_halo.halo.ribbon_radius_cp_offset">70</option>
         <option name="viz_halo.halo.width">700</option>
       </viz>
     </panel>
+  </row>
+  <row>
     <panel>
       <title>Source data</title>
       <table>

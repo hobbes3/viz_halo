@@ -200,8 +200,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	            this.$el.find("svg").remove();
 	            clearTimeout(that.timer_label_relax);
 	            clearTimeout(that.timer_auto_transition);
-
-	            $("#ribbon_dropdown").val("__ALL__")
+	            $("#ribbon_dropdown").unbind("change").val("__ALL__");
 
 	            function config_default(setting, is_float, default_value) {
 	                var value = config[that.getPropertyNamespaceInfo().propertyNamespace + setting];
@@ -316,6 +315,10 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                image
 	                    .transition()
 	                    .style("opacity", 1.0);
+
+	                inner_label_text
+	                    .transition()
+	                    .style("opacity", 1.0);
 	            }
 
 	            function mouseover_outer(d) {
@@ -363,6 +366,12 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    });
 
 	                image
+	                    .transition()
+	                    .style("opacity", function(dd) {
+	                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
+	                    });
+
+	                inner_label_text
 	                    .transition()
 	                    .style("opacity", function(dd) {
 	                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
@@ -710,8 +719,8 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    total_ribbon = _(data.stats.ribbon).findWhere({"ribbon": ribbon_choice}).total,
 	                    pct_ribbon = count / total_ribbon * 100;
 
-	                    html = inner_label + ": " + number_format(count) + " " + ribbon_choice +
-	                        "<br>" + pct_label(pct_ribbon) + " of " + ribbon_choice + " -> " + inner_label;
+	                    html = ribbon_choice + " -> " + inner_label + ": " + number_format(count) +
+	                        "<br>" + ribbon_choice + ": " + pct_label(pct_ribbon) + " of total amount";
 	                }
 
 	                if(d.data.data[0].inner_link) {
@@ -741,6 +750,12 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    });
 
 	                image
+	                    .transition()
+	                    .style("opacity", function(dd) {
+	                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
+	                    });
+
+	                inner_label_text
 	                    .transition()
 	                    .style("opacity", function(dd) {
 	                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
@@ -847,8 +862,8 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + number_format(count);
 
 	                html += ribbon_choice === "__ALL__" ?
-	                    "<br>" + pct_label(pct) + " of total amount -> " + inner_label :
-	                    "<br>" + pct_label(pct_ribbon) + " of total amount -> " + ribbon_label + " -> " + inner_label;
+	                    "<br>" + inner_label + ": " + pct_label(pct) + " of total amount" :
+	                    "<br>" + ribbon_label + " -> " + inner_label + ": " + pct_label(pct_ribbon) + " of total amount";
 
 	                that.tooltip
 	                    .style("visibility", "visible")
@@ -878,6 +893,11 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
 	                    });
 
+	                inner_label_text
+	                    .transition()
+	                    .style("opacity", function(dd) {
+	                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
+	                    });
 	            }
 
 	            var path_inner_g = node_inner_g.selectAll("g.arc_inner")
@@ -992,6 +1012,12 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    .style("opacity", function(dd) {
 	                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
 	                    });
+
+	                inner_label_text
+	                    .transition()
+	                    .style("opacity", function(dd) {
+	                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
+	                    });
 	            }
 
 	            var ribbon = middle.selectAll("path")
@@ -1044,6 +1070,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	            }
 
 	            $("#ribbon_dropdown").on("change", function() {
+	                console.log("on_change");
 	                that.tooltip.style("visibility", "hidden");
 	                path_outer_g.style("opacity", 1.0);
 	                ribbon.style("opacity", opacity_ribbon);
@@ -1177,6 +1204,10 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 
 	                root = d3.hierarchy({"children": data.inner})
 	                    .sum(function(d) {
+	                        if(!d.inner) {
+	                            return;
+	                        }
+
 	                        return _(d.data).chain()
 	                            .filter(function(v) {
 	                                return v.ribbon === ribbon_choice || ribbon_choice === "__ALL__";
@@ -1194,6 +1225,9 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    .duration(transition_duration)
 	                        .attr("transform", function(d) {
 	                            return "translate(" + [d.x, d.y] + ")"
+	                        })
+	                        .style("opacity", function(d) {
+	                            return d.value === 0 ? 0.0 : 1.0;
 	                        });
 
 	                path_inner
@@ -1224,6 +1258,9 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                            return function(t) {
 	                                return ribbon_d_path(i(t));
 	                            };
+	                        })
+	                        .style("opacity", function(d) {
+	                            return d.value === 0 ? 0.0 : opacity_ribbon;
 	                        });
 
 	                image_clip.data(bubble_inner(root).children)
@@ -1253,10 +1290,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    .transition()
 	                    .duration(transition_duration)
 	                        .attr("transform", inner_label_resize)
-	                        .attr("opacity", function(d) {
-	                            return d.value === 0 ? 0.0 : 1.0;
-	                        })
-	                        .attr("visibility", inner_labels_scale > 0? "visible" : "hidden")
+	                        .attr("visibility", inner_labels_scale > 0 ? "visible" : "hidden")
 	                        .on("end", function() {
 	                            d3.select(this)
 	                                .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black")
