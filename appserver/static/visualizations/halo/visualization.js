@@ -239,7 +239,9 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                inner_labels_scale      = config_default("inner_labels_scale",      true,  0.9),
 	                label_relax_delta       = config_default("label_relax_delta",       true,  0.5),
 	                label_relax_sleep       = config_default("label_relax_sleep",       true,  10),
-	                auto_transition         = config_default("auto_transition",         true,  0),
+	                auto_transition         = config_default("auto_transition",         false,  "on"),
+	                auto_transition_sleep   = config_default("auto_transition_sleep",   true,  0),
+	                draggable               = config_default("draggable",               false,  "on"),
 	                transition_duration     = config_default("transition_duration",     true,  750);
 
 	            var color_outer = d3.scaleOrdinal(d3[outer_colors] || d3_scale_chromatic[outer_colors]);
@@ -685,8 +687,11 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    .attr("class", "node_inner")
 	                    .attr("transform", function(d) {
 	                        return "translate(" + [d.x, d.y] + ")";
-	                    })
-	                .call(drag);
+	                    });
+
+	            if(draggable === "on") {
+	                node_inner_g.call(drag);
+	            }
 
 	            var image_clip = node_inner_g
 	                .append("defs")
@@ -1065,8 +1070,8 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                $("#ribbon_controls option:eq(" + x + ")").prop("selected", true).change();
 	            }
 
-	            if(auto_transition > 0) {
-	                that.timer_auto_transition = setInterval(ribbon_controls_choose_next, auto_transition);
+	            if(auto_transition === "on") {
+	                that.timer_auto_transition = setInterval(ribbon_controls_choose_next, auto_transition_sleep);
 	            }
 
 	            $("#ribbon_dropdown").on("change", function() {

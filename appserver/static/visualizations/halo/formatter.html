@@ -111,9 +111,36 @@
 </form>
 <form class="splunk-formatter-section" section-label="Animation">
     <div class="control-group">
+        <label class="control-label">Auto Transition</label>
+        <div class="controls controls-block">
+            <splunk-select name="{{VIZ_NAMESPACE}}.auto_transition" value="off">
+                <option value="on">On</option>
+                <option value="off">Off</option>
+            </splunk-select>
+        </div>
+    </div>
+    <div class="control-group">
         <label class="control-label">Auto Transition Sleep</label>
         <div class="controls controls-block">
-            <splunk-text-input name="{{VIZ_NAMESPACE}}.auto_transition"></splunk-text-input>
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.auto_transition_sleep"></splunk-text-input>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Stop Auto Transition After User Action</label>
+        <div class="controls controls-block">
+            <splunk-select name="{{VIZ_NAMESPACE}}.auto_transition_stops" value="on">
+                <option value="on">On</option>
+                <option value="off">Off</option>
+            </splunk-select>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Inner Rings Draggable</label>
+        <div class="controls controls-block">
+            <splunk-select name="{{VIZ_NAMESPACE}}.draggable" value="on">
+                <option value="on">On</option>
+                <option value="off">Off</option>
+            </splunk-select>
         </div>
     </div>
     <div class="control-group">

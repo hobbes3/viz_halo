@@ -1,25 +1,25 @@
-candidate,"candidate_id","committee.committee_type_full","committee.name","committee_id",spent,toward
-Clinton,P00003392,"PAC - Qualified","SEIU COPE (SERVICE EMPLOYEES INTERNATIONAL UNION COMMITTEE ON POLITICAL EDUCATION)",C00004036,"2358116.82",supporting
-Clinton,P00003392,"PAC - Qualified","NATIONAL RIFLE ASSOCIATION OF AMERICA POLITICAL VICTORY FUND",C00053553,"990732.93",opposing
-Trump,P80001571,"PAC - Qualified","NATIONAL RIFLE ASSOCIATION OF AMERICA POLITICAL VICTORY FUND",C00053553,"994244.5899999999",supporting
-Trump,P80001571,"Super PAC (Independent Expenditure-Only)","CLUB FOR GROWTH ACTION",C00487470,"7054264.3000000026",opposing
-Clinton,P00003392,"Super PAC (Independent Expenditure-Only)","PLANNED PARENTHOOD VOTES",C00489799,"2397290.05",supporting
-Clinton,P00003392,"Super PAC (Independent Expenditure-Only)","RGA RIGHT DIRECTION PAC",C00490730,"3170535.67",opposing
-Trump,P80001571,"Super PAC (Independent Expenditure-Only)","PRIORITIES USA ACTION",C00495861,"24730043.6400000080",opposing
-Clinton,P00003392,"Super PAC (Independent Expenditure-Only)","PRIORITIES USA ACTION",C00495861,"5598751.51",supporting
-Trump,P80001571,"Super PAC (Independent Expenditure-Only)","UNITED WE CAN",C00523621,"6131345.06",opposing
-Clinton,P00003392,"Super PAC (Independent Expenditure-Only)","UNITED WE CAN",C00523621,"3251773.68",supporting
-Clinton,P00003392,"PAC - Qualified","NATIONAL CAMPAIGN",C00563759,"1210000.0",opposing
-Clinton,P00003392,"PAC - Nonqualified","TEA PARTY MAJORITY FUND",C00566174,"3025112.32",opposing
-Trump,P80001571,"Super PAC (Independent Expenditure-Only)","PATRIOTS FOR TRUMP",C00586826,"253405.69",supporting
-Trump,P80001571,"Super PAC (Independent Expenditure-Only)","FUTURE IN AMERICA INC.",C00596973,"233022.0",supporting
-Trump,P80001571,"Super PAC (Independent Expenditure-Only)","OUR PRINCIPLES PAC",C00603621,"16353179.28",opposing
-Trump,P80001571,"PAC with Non-Contribution Account - Qualified","GREAT AMERICA PAC",C00608489,"8516156.86",supporting
-Clinton,P00003392,"Super PAC (Independent Expenditure-Only)","IMMIGRANT VOTERS WIN PAC",C00612820,"2509965.05",supporting
-Trump,P80001571,"Independent Expenditor (Person or Group)","AMERICAN FUTURE FUND",C90011677,"6784775.98",opposing
-Clinton,P00003392,"Independent Expenditor (Person or Group)","NATIONAL RIFLE ASSOCIATION INSTITUTE FOR LEGISLATIVE ACTION",C90013301,"2895456.7800000003",opposing
-Trump,P80001571,"Independent Expenditor (Person or Group)","ADAMS, STEPHEN",C90016221,"654835.25",supporting
-Clinton,P00003392,none,"others opposing clinton",none,"6643282.01",opposing
-Trump,P80001571,none,"others opposing trump",none,"22528502.08",opposing
-Clinton,P00003392,none,"others supporting clinton",none,"6518347.03",supporting
-Trump,P80001571,none,"others supporting trump",none,"543052.44",supporting
+"committee_id","committee.name","committee.committee_type_full",toward,candidate,"candidate_id",spent
+C00053553,"NATIONAL RIFLE ASSOCIATION OF AMERICA POLITICAL VICTORY FUND","PAC - Qualified",opposing,clinton,P00003392,"7448202.2900000000"
+C00053553,"NATIONAL RIFLE ASSOCIATION OF AMERICA POLITICAL VICTORY FUND","PAC - Qualified",supporting,trump,P80001571,"1867446.9299999997"
+C00473918,"WOMEN VOTE!","Super PAC (Independent Expenditure-Only)",supporting,clinton,P00003392,"5651798.3499999996"
+C00486845,"LCV VICTORY FUND","Super PAC (Independent Expenditure-Only)",supporting,clinton,P00003392,"6536217.3099999987"
+C00489799,"PLANNED PARENTHOOD VOTES","Super PAC (Independent Expenditure-Only)",supporting,clinton,P00003392,"3806213.83"
+C00490730,"RGA RIGHT DIRECTION PAC","Super PAC (Independent Expenditure-Only)",opposing,clinton,P00003392,"5728865.17"
+C00495861,"PRIORITIES USA ACTION","Super PAC (Independent Expenditure-Only)",opposing,trump,P80001571,"115287883.8900000155"
+C00495861,"PRIORITIES USA ACTION","Super PAC (Independent Expenditure-Only)",supporting,clinton,P00003392,"6473751.51"
+C00523621,"UNITED WE CAN","Super PAC (Independent Expenditure-Only)",opposing,trump,P80001571,"8646043.69"
+C00523621,"UNITED WE CAN","Super PAC (Independent Expenditure-Only)",supporting,clinton,P00003392,"4785860.81"
+C00574533,FUTURE45,"Super PAC (Independent Expenditure-Only)",opposing,clinton,P00003392,"24195702.19"
+C00575373,"MAKE AMERICA NUMBER 1","Super PAC (Independent Expenditure-Only)",opposing,clinton,P00003392,"4414116.5"
+C00603621,"OUR PRINCIPLES PAC","Super PAC (Independent Expenditure-Only)",opposing,trump,P80001571,"16353179.28"
+C00608489,"GREAT AMERICA PAC","PAC with Non-Contribution Account - Qualified",supporting,trump,P80001571,"24271990.73"
+C00615815,"NEXTGEN CALIFORNIA ACTION COMMITTEE","Super PAC (Independent Expenditure-Only)",opposing,trump,P80001571,"13240868.80"
+C00618876,"REBUILDING AMERICA NOW","Super PAC (Independent Expenditure-Only)",opposing,clinton,P00003392,"17047099.93"
+C00618876,"REBUILDING AMERICA NOW","Super PAC (Independent Expenditure-Only)",supporting,trump,P80001571,"4095640.9199999999"
+C00625525,"LIFT LEADING ILLINOIS FOR TOMORROW","Super PAC (Independent Expenditure-Only)",opposing,trump,P80001571,"9922027.5"
+C00625574,"SAVE AMERICA FROM ITS GOVERNMENT","Super PAC (Independent Expenditure-Only)",supporting,trump,P80001571,"3415287.7100000000"
+C90016221,"ADAMS, STEPHEN","Independent Expenditor (Person or Group)",supporting,trump,P80001571,"1663817.39"
+none,"others opposing clinton",none,opposing,clinton,P00003392,"26741475.3099999949"
+none,"others opposing trump",none,opposing,trump,P80001571,"70782938.1000000089"
+none,"others supporting clinton",none,supporting,clinton,P00003392,"30931007.27"
+none,"others supporting trump",none,supporting,trump,P80001571,"4376963.98"
