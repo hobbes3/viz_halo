@@ -7,8 +7,7 @@ export = system
 
 [views/simple_halo_example]
 version = 6.5.2
-modtime = 1486515638.471309000
-owner = admin
+modtime = 1487117339.941491000
 
 [nav/default]
 version = 6.5.2

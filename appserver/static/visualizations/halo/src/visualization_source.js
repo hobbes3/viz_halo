@@ -28,6 +28,7 @@ function(
 
             this.timer_label_relax;
             this.timer_auto_transition;
+            this.timer_auto_transition_resume;
         },
 
         // Optionally implement to format data returned from search.
@@ -114,10 +115,10 @@ function(
                         .value()
             };
 
+            $("#ribbon_dropdown option").not("[value='__ALL__']").remove();
+
             _(data.stats.ribbon).each(function(o) {
-                if(!$("#ribbon_dropdown option[value=" + o.ribbon + "]").length) {
-                    $("#ribbon_dropdown").append('<option value="' + o.ribbon + '">' + o.ribbon + '</option>');
-                }
+                $("#ribbon_dropdown").append('<option value="' + o.ribbon + '">' + o.ribbon + '</option>');
             });
 
             data.outer = _(raw_data.results).map(function(v, i) {
@@ -155,6 +156,7 @@ function(
             this.$el.find("svg").remove();
             clearTimeout(that.timer_label_relax);
             clearTimeout(that.timer_auto_transition);
+            clearTimeout(that.timer_auto_transition_resume);
             $("#ribbon_dropdown").unbind("change").val("__ALL__");
 
             function config_default(setting, is_float, default_value) {
@@ -177,28 +179,28 @@ function(
             var ribbon_choice = "__ALL__",
                 animation = false,
                 // descriptions of each config setting in formatter.html
-                width                   = config_default("width",                   true,  that.$el.width() * 0.8),
-                height                  = config_default("height",                  true,  width * 0.8),
-                radius                  = config_default("radius",                  true,  width / 2 * 0.55),
-                radius_label            = config_default("radius_label",            true,  radius * 1.1),
-                thickness               = config_default("thickness",               true,  radius * 0.07),
-                ribbon_radius_cp_offset = config_default("ribbon_radius_cp_offset", true,  radius * 0.2),
-                outer_colors            = config_default("outer_colors",            false, "schemeCategory20b"),
-                radius_pack             = config_default("radius_pack",             true,  0.8 * (radius - thickness)),
-                padding_pack            = config_default("padding_pack",            true,  radius * 0.1),
-                opacity_ribbon          = config_default("opacity_ribbon",          true,  0.6),
-                opacity_fade            = config_default("opacity_fade",            true,  0.1),
-                label_font_size         = config_default("label_font_size",         true,  radius * 0.04),
-                label_spacing           = config_default("label_spacing",           true,  radius * 0.01),
-                label_wrap_length       = config_default("label_wrap_length",       true,  radius * 0.7),
-                inner_labels_scale      = config_default("inner_labels_scale",      true,  0.9),
-                label_relax_delta       = config_default("label_relax_delta",       true,  0.5),
-                label_relax_sleep       = config_default("label_relax_sleep",       true,  10),
-                auto_transition         = config_default("auto_transition",         false, "off"),
-                auto_transition_sleep   = config_default("auto_transition_sleep",   true,  2000),
-                auto_transition_stops   = config_default("auto_transition_stops",   false, "on"),
-                draggable               = config_default("draggable",               false, "on"),
-                transition_duration     = config_default("transition_duration",     true,  750);
+                width                        = config_default("width",                        true,  that.$el.width() * 0.8),
+                height                       = config_default("height",                       true,  width * 0.8),
+                radius                       = config_default("radius",                       true,  width / 2 * 0.55),
+                radius_label                 = config_default("radius_label",                 true,  radius * 1.1),
+                thickness                    = config_default("thickness",                    true,  radius * 0.07),
+                ribbon_radius_cp_offset      = config_default("ribbon_radius_cp_offset",      true,  radius * 0.2),
+                outer_colors                 = config_default("outer_colors",                 false, "schemeCategory20b"),
+                radius_pack                  = config_default("radius_pack",                  true,  0.8 * (radius - thickness)),
+                padding_pack                 = config_default("padding_pack",                 true,  radius * 0.1),
+                opacity_ribbon               = config_default("opacity_ribbon",               true,  0.6),
+                opacity_fade                 = config_default("opacity_fade",                 true,  0.1),
+                label_font_size              = config_default("label_font_size",              true,  radius * 0.04),
+                label_spacing                = config_default("label_spacing",                true,  radius * 0.01),
+                label_wrap_length            = config_default("label_wrap_length",            true,  radius * 0.7),
+                inner_labels_scale           = config_default("inner_labels_scale",           true,  0.9),
+                label_relax_delta            = config_default("label_relax_delta",            true,  0.5),
+                label_relax_sleep            = config_default("label_relax_sleep",            true,  10),
+                auto_transition              = config_default("auto_transition",              false, "never"),
+                auto_transition_sleep        = config_default("auto_transition_sleep",        true,  2000),
+                auto_transition_resume_sleep = config_default("auto_transition_resume_sleep", true,  5000),
+                draggable                    = config_default("draggable",                    false, "on"),
+                transition_duration          = config_default("transition_duration",          true,  750);
 
             var color_outer = d3.scaleOrdinal(d3[outer_colors] || d3_scale_chromatic[outer_colors]);
 
@@ -280,6 +282,8 @@ function(
             }
 
             function mouseover_outer(d) {
+                stop_auto_animation();
+
                 if(animation) return;
 
                 var outer_label = d.data.outer.capitalize(),
@@ -663,6 +667,8 @@ function(
                     });
 
             function mouseover_center(d) {
+                stop_auto_animation();
+
                 if(animation) return;
 
                 var inner_label = d.data.inner.capitalize(),
@@ -808,6 +814,8 @@ function(
                 .sort(null);
 
             function mouseover_inner(d) {
+                stop_auto_animation();
+
                 if(animation) return;
 
                 var outer_label = d.data.outer.capitalize(),
@@ -937,6 +945,8 @@ function(
             }
 
             function mouseover_ribbon(d) {
+                stop_auto_animation();
+
                 if(animation) return;
 
                 var outer_label = d.data.outer.capitalize(),
@@ -1026,240 +1036,259 @@ function(
                 $("#ribbon_controls option:eq(" + x + ")").prop("selected", true).change();
             }
 
-            if(auto_transition === "on") {
-                that.timer_auto_transition = setInterval(ribbon_controls_choose_next, auto_transition_sleep);
+            function start_auto_transition() {
+                if(auto_transition !== "never") {
+                    that.timer_auto_transition = setInterval(ribbon_controls_choose_next, auto_transition_sleep);
+                }
             }
 
-            $("#ribbon_dropdown").on("change", function() {
-                console.log("on_change");
-                that.tooltip.style("visibility", "hidden");
-                path_outer_g.style("opacity", 1.0);
-                ribbon.style("opacity", opacity_ribbon);
-                path_inner_g.style("opacity", 1.0);
-                image.style("opacity", 1.0);
-
-                var ribbon_choice_previous = ribbon_choice;
-                ribbon_choice = this.value;
-
-                if(ribbon_choice === ribbon_choice_previous) {
+            function stop_auto_animation() {
+                if(auto_transition === "always") {
                     return;
                 }
 
-                animation = true;
+                clearTimeout(that.timer_auto_transition);
+                clearTimeout(that.timer_auto_transition_resume);
 
-                path_outer.data(pie_outer(data.outer))
-                    .transition()
-                    .duration(transition_duration)
-                        .attrTween("d", function(d) {
-                            var i = d3.interpolate(this._current, d);
-                            this._current = i(0);
-                            return function(t) {
-                                return arc_outer(i(t));
-                            };
-                        });
-
-                label_group
-                    .attr("visibility", "visible")
-                    .transition()
-                    .duration(transition_duration)
-                        .style("opacity", function(d) {
-                            return d.data.ribbon === ribbon_choice || ribbon_choice === "__ALL__" ? 1.0 : 0.0;
-                        })
-                        .on("end", function() {
-                            d3.select(this).attr("visibility", function(d) {
-                                return d.data.ribbon === ribbon_choice || ribbon_choice === "__ALL__" ? "visible" : "hidden";
-                            });
-                        });
-
-                label_circle.data(pie_outer(data.outer))
-                    .transition()
-                    .duration(transition_duration)
-                        .attrTween("transform", function(d) {
-                            var i = d3.interpolate(this._current, d);
-                            this._current = i(0);
-                            return function(t) {
-                                return "translate(" + arc_outer.centroid(i(t)) + ")";
-                            };
-                        });
-
-                label_line.data(pie_outer(data.outer))
-                    .transition()
-                    .duration(transition_duration)
-                        .attrTween("x1", function(d) {
-                            var i = d3.interpolate(this._current, d);
-                            this._current = i(0);
-                            return function(t) {
-                                return arc_outer.centroid(i(t))[0];
-                            };
-                        })
-                        .attrTween("y1", function(d) {
-                            var i = d3.interpolate(this._current, d);
-                            this._current = i(0);
-                            return function(t) {
-                                return arc_outer.centroid(i(t))[1];
-                            };
-                        })
-                        .attrTween("x2", function(d) {
-                            var i = d3.interpolate(this._current, d);
-                            this._current = i(0);
-                            return function(t) {
-                                var c = arc_outer.centroid(i(t)),
-                                    mid_angle = Math.atan2(c[1], c[0]);
-                                return Math.cos(mid_angle) * radius_label;
-                            };
-                        })
-                        .attrTween("y2", function(d) {
-                            var i = d3.interpolate(this._current, d);
-                            this._current = i(0);
-                            return function(t) {
-                                var c = arc_outer.centroid(i(t)),
-                                    mid_angle = Math.atan2(c[1], c[0]);
-                                return Math.sin(mid_angle) * radius_label;
-                            };
-                        });
-
-                label_text_g.data(pie_outer(data.outer))
-                    .transition()
-                    .duration(transition_duration)
-                        .attrTween("transform", function(d) {
-                            var i = d3.interpolate(this._current, d);
-                            this._current = i(0);
-                            return function(t) {
-                                var c = arc_outer.centroid(i(t)),
-                                    mid_angle = Math.atan2(c[1], c[0]),
-                                    x = Math.cos(mid_angle) * radius_label,
-                                    adjust = x > 0 ? 5 : -5,
-                                    label_x = x + adjust,
-                                    label_y = Math.sin(mid_angle) * radius_label;
-                                return "translate(" + [label_x, label_y] + ")";
-                            };
-                        });
-
-                function end_all(transition, callback) {
-                    var n = 0;
-                    transition
-                        .on("start", function() { ++n; })
-                        .on("end", function() {
-                            if(!--n) callback.apply(this, arguments);
-                        });
+                if(auto_transition === "resume") {
+                    that.timer_auto_transition_resume = setTimeout(start_auto_transition, auto_transition_resume_sleep);
                 }
+            }
 
-                label_text.data(pie_outer(data.outer))
-                    .transition()
-                    .duration(transition_duration)
-                        .attrTween("text-anchor", function(d) {
-                            var i = d3.interpolate(this._current, d);
-                            this._current = i(0);
-                            return function(t) {
-                                var c = arc_outer.centroid(i(t)),
-                                    mid_angle = Math.atan2(c[1], c[0]),
-                                    x = Math.cos(mid_angle) * radius_label;
-                                return x > 0 ? "start" : "end";
-                            };
-                        })
-                        .call(end_all, function() {
-                            animation = false;
-                            mouseout_default();
-                            label_relax();
-                        });
+            start_auto_transition();
 
-                root = d3.hierarchy({"children": data.inner})
-                    .sum(function(d) {
-                        if(!d.inner) {
-                            return;
-                        }
+            $("#ribbon_dropdown")
+                .on("click", stop_auto_animation)
+                .on("change", function() {
+                    //console.log("on_change");
+                    that.tooltip.style("visibility", "hidden");
+                    path_outer_g.style("opacity", 1.0);
+                    ribbon.style("opacity", opacity_ribbon);
+                    path_inner_g.style("opacity", 1.0);
+                    image.style("opacity", 1.0);
 
-                        return _(d.data).chain()
-                            .filter(function(v) {
-                                return v.ribbon === ribbon_choice || ribbon_choice === "__ALL__";
+                    var ribbon_choice_previous = ribbon_choice;
+                    ribbon_choice = this.value;
+
+                    if(ribbon_choice === ribbon_choice_previous) {
+                        return;
+                    }
+
+                    animation = true;
+
+                    path_outer.data(pie_outer(data.outer))
+                        .transition()
+                        .duration(transition_duration)
+                            .attrTween("d", function(d) {
+                                var i = d3.interpolate(this._current, d);
+                                this._current = i(0);
+                                return function(t) {
+                                    return arc_outer(i(t));
+                                };
+                            });
+
+                    label_group
+                        .attr("visibility", "visible")
+                        .transition()
+                        .duration(transition_duration)
+                            .style("opacity", function(d) {
+                                return d.data.ribbon === ribbon_choice || ribbon_choice === "__ALL__" ? 1.0 : 0.0;
                             })
-                            .pluck("count")
-                            .reduce(function(memo, num) {
-                                return memo + num;
-                            }, 0)
-                            .value();
-                    });
-
-                node_inner_g
-                    .data(bubble_inner(root).children)
-                    .transition()
-                    .duration(transition_duration)
-                        .attr("transform", function(d) {
-                            return "translate(" + [d.x, d.y] + ")"
-                        })
-                        .style("opacity", function(d) {
-                            return d.value === 0 ? 0.0 : 1.0;
-                        });
-
-                path_inner
-                    .data(function(d) {
-                        return pie_inner(d.data.data).map(function(m) {
-                            m.r = d.r;
-                            return m;
-                        })
-                    })
-                    .transition()
-                    .duration(transition_duration)
-                        .attrTween("d", function(d) {
-                            d.innerRadius = d.r - thickness;
-                            d.outerRadius = d.r;
-                            var i = d3.interpolate(this._current, d);
-                            this._current = i(0);
-                            return function(t) {
-                                return arc_inner(i(t));
-                            };
-                        });
-
-                ribbon.data(ribbon_data(data))
-                    .transition()
-                    .duration(transition_duration)
-                        .attrTween("d", function(d) {
-                            var i = d3.interpolate(this._current, d);
-                            this._current = i(0);
-                            return function(t) {
-                                return ribbon_d_path(i(t));
-                            };
-                        })
-                        .style("opacity", function(d) {
-                            return d.value === 0 ? 0.0 : opacity_ribbon;
-                        });
-
-                image_clip.data(bubble_inner(root).children)
-                    .transition()
-                    .duration(transition_duration)
-                        .attr("r", function(d) {
-                            return Math.max(d.r - thickness, 0);
-                        });
-
-                image.data(bubble_inner(root).children)
-                    .transition()
-                    .duration(transition_duration)
-                        .attr("x", function(d) {
-                            return thickness - d.r;
-                        })
-                        .attr("y", function(d) {
-                            return thickness - d.r;
-                        })
-                        .attr("width", function(d) {
-                            return Math.max(2 * (d.r - thickness), 0);
-                        })
-                        .attr("height", function(d) {
-                            return Math.max(2 * (d.r - thickness), 0);
-                        });
-
-                inner_label_text.data(bubble_inner(root).children)
-                    .transition()
-                    .duration(transition_duration)
-                        .attr("transform", inner_label_resize)
-                        .attr("visibility", inner_labels_scale > 0 ? "visible" : "hidden")
-                        .on("end", function() {
-                            d3.select(this)
-                                .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black")
-                                .attr("visibility", function(d) {
-                                    return d.value === 0 || inner_labels_scale === 0 ? "hidden" : "visible";
+                            .on("end", function() {
+                                d3.select(this).attr("visibility", function(d) {
+                                    return d.data.ribbon === ribbon_choice || ribbon_choice === "__ALL__" ? "visible" : "hidden";
                                 });
+                            });
+
+                    label_circle.data(pie_outer(data.outer))
+                        .transition()
+                        .duration(transition_duration)
+                            .attrTween("transform", function(d) {
+                                var i = d3.interpolate(this._current, d);
+                                this._current = i(0);
+                                return function(t) {
+                                    return "translate(" + arc_outer.centroid(i(t)) + ")";
+                                };
+                            });
+
+                    label_line.data(pie_outer(data.outer))
+                        .transition()
+                        .duration(transition_duration)
+                            .attrTween("x1", function(d) {
+                                var i = d3.interpolate(this._current, d);
+                                this._current = i(0);
+                                return function(t) {
+                                    return arc_outer.centroid(i(t))[0];
+                                };
+                            })
+                            .attrTween("y1", function(d) {
+                                var i = d3.interpolate(this._current, d);
+                                this._current = i(0);
+                                return function(t) {
+                                    return arc_outer.centroid(i(t))[1];
+                                };
+                            })
+                            .attrTween("x2", function(d) {
+                                var i = d3.interpolate(this._current, d);
+                                this._current = i(0);
+                                return function(t) {
+                                    var c = arc_outer.centroid(i(t)),
+                                        mid_angle = Math.atan2(c[1], c[0]);
+                                    return Math.cos(mid_angle) * radius_label;
+                                };
+                            })
+                            .attrTween("y2", function(d) {
+                                var i = d3.interpolate(this._current, d);
+                                this._current = i(0);
+                                return function(t) {
+                                    var c = arc_outer.centroid(i(t)),
+                                        mid_angle = Math.atan2(c[1], c[0]);
+                                    return Math.sin(mid_angle) * radius_label;
+                                };
+                            });
+
+                    label_text_g.data(pie_outer(data.outer))
+                        .transition()
+                        .duration(transition_duration)
+                            .attrTween("transform", function(d) {
+                                var i = d3.interpolate(this._current, d);
+                                this._current = i(0);
+                                return function(t) {
+                                    var c = arc_outer.centroid(i(t)),
+                                        mid_angle = Math.atan2(c[1], c[0]),
+                                        x = Math.cos(mid_angle) * radius_label,
+                                        adjust = x > 0 ? 5 : -5,
+                                        label_x = x + adjust,
+                                        label_y = Math.sin(mid_angle) * radius_label;
+                                    return "translate(" + [label_x, label_y] + ")";
+                                };
+                            });
+
+                    function end_all(transition, callback) {
+                        var n = 0;
+                        transition
+                            .on("start", function() { ++n; })
+                            .on("end", function() {
+                                if(!--n) callback.apply(this, arguments);
+                            });
+                    }
+
+                    label_text.data(pie_outer(data.outer))
+                        .transition()
+                        .duration(transition_duration)
+                            .attrTween("text-anchor", function(d) {
+                                var i = d3.interpolate(this._current, d);
+                                this._current = i(0);
+                                return function(t) {
+                                    var c = arc_outer.centroid(i(t)),
+                                        mid_angle = Math.atan2(c[1], c[0]),
+                                        x = Math.cos(mid_angle) * radius_label;
+                                    return x > 0 ? "start" : "end";
+                                };
+                            })
+                            .call(end_all, function() {
+                                animation = false;
+                                mouseout_default();
+                                label_relax();
+                            });
+
+                    root = d3.hierarchy({"children": data.inner})
+                        .sum(function(d) {
+                            if(!d.inner) {
+                                return;
+                            }
+
+                            return _(d.data).chain()
+                                .filter(function(v) {
+                                    return v.ribbon === ribbon_choice || ribbon_choice === "__ALL__";
+                                })
+                                .pluck("count")
+                                .reduce(function(memo, num) {
+                                    return memo + num;
+                                }, 0)
+                                .value();
                         });
-            });
+
+                    node_inner_g
+                        .data(bubble_inner(root).children)
+                        .transition()
+                        .duration(transition_duration)
+                            .attr("transform", function(d) {
+                                return "translate(" + [d.x, d.y] + ")"
+                            })
+                            .style("opacity", function(d) {
+                                return d.value === 0 ? 0.0 : 1.0;
+                            });
+
+                    path_inner
+                        .data(function(d) {
+                            return pie_inner(d.data.data).map(function(m) {
+                                m.r = d.r;
+                                return m;
+                            })
+                        })
+                        .transition()
+                        .duration(transition_duration)
+                            .attrTween("d", function(d) {
+                                d.innerRadius = d.r - thickness;
+                                d.outerRadius = d.r;
+                                var i = d3.interpolate(this._current, d);
+                                this._current = i(0);
+                                return function(t) {
+                                    return arc_inner(i(t));
+                                };
+                            });
+
+                    ribbon.data(ribbon_data(data))
+                        .transition()
+                        .duration(transition_duration)
+                            .attrTween("d", function(d) {
+                                var i = d3.interpolate(this._current, d);
+                                this._current = i(0);
+                                return function(t) {
+                                    return ribbon_d_path(i(t));
+                                };
+                            })
+                            .style("opacity", function(d) {
+                                return d.value === 0 ? 0.0 : opacity_ribbon;
+                            });
+
+                    image_clip.data(bubble_inner(root).children)
+                        .transition()
+                        .duration(transition_duration)
+                            .attr("r", function(d) {
+                                return Math.max(d.r - thickness, 0);
+                            });
+
+                    image.data(bubble_inner(root).children)
+                        .transition()
+                        .duration(transition_duration)
+                            .attr("x", function(d) {
+                                return thickness - d.r;
+                            })
+                            .attr("y", function(d) {
+                                return thickness - d.r;
+                            })
+                            .attr("width", function(d) {
+                                return Math.max(2 * (d.r - thickness), 0);
+                            })
+                            .attr("height", function(d) {
+                                return Math.max(2 * (d.r - thickness), 0);
+                            });
+
+                    inner_label_text.data(bubble_inner(root).children)
+                        .transition()
+                        .duration(transition_duration)
+                            .attr("transform", inner_label_resize)
+                            .attr("visibility", inner_labels_scale > 0 ? "visible" : "hidden")
+                            .on("end", function() {
+                                d3.select(this)
+                                    .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black")
+                                    .attr("visibility", function(d) {
+                                        return d.value === 0 || inner_labels_scale === 0 ? "hidden" : "visible";
+                                    });
+                            });
+                });
         },
 
         // Search data params

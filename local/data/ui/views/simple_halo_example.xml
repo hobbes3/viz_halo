@@ -7,9 +7,11 @@
     <panel>
       <title>Halo visualization</title>
       <viz type="viz_halo.halo">
-        <title>With auto transition on and stop auto</title>
+        <title>With auto transition set to "resume"</title>
         <search base="base"></search>
-        <option name="viz_halo.halo.auto_transition">0</option>
+        <option name="viz_halo.halo.auto_transition">resume</option>
+        <option name="viz_halo.halo.auto_transition_stops">on</option>
+        <option name="viz_halo.halo.draggable">on</option>
         <option name="viz_halo.halo.label_font_size">15</option>
         <option name="viz_halo.halo.outer_colors">schemeDark2</option>
         <option name="viz_halo.halo.ribbon_radius_cp_offset">70</option>

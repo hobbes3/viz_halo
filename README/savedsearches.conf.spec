@@ -17,4 +17,6 @@ display.visualizations.custom.viz_halo.halo.label_relax_delta = <float>
 display.visualizations.custom.viz_halo.halo.label_relax_sleep = <float>
 display.visualizations.custom.viz_halo.halo.inner_labels_scale = <float>
 display.visualizations.custom.viz_halo.halo.transition_duration = <float>
-display.visualizations.custom.viz_halo.halo.auto_transition = <float>
+display.visualizations.custom.viz_halo.halo.auto_transition = <string>
+display.visualizations.custom.viz_halo.halo.auto_transition_sleep = <float>
+display.visualizations.custom.viz_halo.halo.auto_transition_resume_sleep = <float>
