@@ -1,4 +1,4 @@
-import {acos, asin, atan2, cos, degrees, epsilon, epsilon2, radians, sin, sqrt} from "./math";
+import {asin, atan2, cos, degrees, epsilon, epsilon2, radians, sin, sqrt} from "./math";
 import noop from "./noop";
 import stream from "./stream";
 
@@ -103,7 +103,7 @@ function centroidRingPoint(lambda, phi) {
       cz = x0 * y - y0 * x,
       m = sqrt(cx * cx + cy * cy + cz * cz),
       u = x0 * x + y0 * y + z0 * z,
-      v = m && -acos(u) / m, // area weight
+      v = m && -asin(m) / m, // area weight
       w = atan2(m, u); // line weight
   X2 += v * cx;
   Y2 += v * cy;

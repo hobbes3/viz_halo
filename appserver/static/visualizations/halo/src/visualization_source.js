@@ -584,6 +584,13 @@ function(
 
             var root = d3.hierarchy({"children": data.inner})
                 .sum(function(d) {
+                    //if(!d.inner) {
+                    //    d.data = _(d.children).chain()
+                    //        .pluck("data")
+                    //        .flatten()
+                    //        .value();
+                    //}
+
                     return _(d.data).chain()
                         .filter(function(v) {
                             return v.ribbon === ribbon_choice || ribbon_choice === "__ALL__";
@@ -885,7 +892,6 @@ function(
 
             function ribbon_data(data) {
                 return pie_outer(data.outer).map(function(d) {
-
                     var node = bubble_inner(root).children
                         .filter(function(dd) {
                             return dd.data.inner === d.data.inner;
@@ -1194,9 +1200,12 @@ function(
 
                     root = d3.hierarchy({"children": data.inner})
                         .sum(function(d) {
-                            if(!d.inner) {
-                                return;
-                            }
+                            //if(!d.inner) {
+                            //    d.data = _(d.children).chain()
+                            //        .pluck("data")
+                            //        .flatten()
+                            //        .value();
+                            //}
 
                             return _(d.data).chain()
                                 .filter(function(v) {

@@ -25,8 +25,7 @@
       <viz type="viz_halo.halo">
         <search base="base"></search>
         <option name="height">750</option>
-        <option name="viz_halo.halo.auto_transition">off</option>
-        <option name="viz_halo.halo.auto_transition_stops">on</option>
+        <option name="viz_halo.halo.auto_transition">never</option>
         <option name="viz_halo.halo.draggable">on</option>
         <option name="viz_halo.halo.inner_labels_scale">0</option>
         <option name="viz_halo.halo.outer_colors">schemeCategory20b</option>
