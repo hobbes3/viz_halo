@@ -15,7 +15,8 @@
   <row>
     <panel>
       <html>
-        Data aggregated from the <a href="https://beta.fec.gov/" target="_blank">Federal Election Committee</a>. Visit <a href="http://splunk4good.com/elections" target="_blank">http://splunk4good.com/elections</a> for the full write-up, including the technical discussion.
+        <p>Data aggregated from the <a href="https://beta.fec.gov/" target="_blank">Federal Election Committee</a>.</p>
+        <p>Visit <a href="http://splunk4good.com/elections" target="_blank">http://splunk4good.com/elections</a> for the full write-up, including the technical discussion.</p>
       </html>
     </panel>
   </row>

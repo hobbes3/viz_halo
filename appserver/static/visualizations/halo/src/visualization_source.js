@@ -374,7 +374,9 @@ function(
                 .enter()
                 .append("g")
                     .attr("class", "label-group")
-                    .attr("visibility", "visible")
+                    .attr("visibility", function() {
+                        return label_font_size > 0 ? "visible" : "hidden";
+                    })
                     .style("cursor", function(d) {
                         return d.data.outer_link ? "pointer" : "";
                     })
