@@ -17,6 +17,7 @@ function(
     // Extend from SplunkVisualizationBase
     return SplunkVisualizationBase.extend({
         initialize: function() {
+            console.log("initialize");
             SplunkVisualizationBase.prototype.initialize.apply(this, arguments);
             this.$el = $(this.el);
 
@@ -26,14 +27,27 @@ function(
 
             this.$el.append('<div id="ribbon_controls"><label>Choose ribbon types: </label><select id="ribbon_dropdown"><option value="__ALL__">All</option></select></div>');
 
-            this.timer_label_relax;
-            this.timer_auto_transition;
-            this.timer_auto_transition_resume;
+            window.timer_label_relax;
+            window.timer_auto_transition;
+            window.timer_auto_transition_resume;
+        },
+
+        // Search data params
+        getInitialDataParams: function() {
+            return ({
+                outputMode: SplunkVisualizationBase.RAW_OUTPUT_MODE,
+                count: 1000000
+            });
+        },
+
+        // Override to respond to re-sizing events
+        reflow: function() {
         },
 
         // Optionally implement to format data returned from search.
         // The returned object will be passed to updateView as 'data'
         formatData: function(raw_data) {
+            console.log("formatData");
             if(raw_data.results.length < 1) {
                 return false;
             }
@@ -147,19 +161,23 @@ function(
         //  'data' will be the data object returned from formatData or from the search
         //  'config' will be the configuration property object
         updateView: function(data, config) {
+            console.log("updateView");
+
             var that = this;
 
             if(!data) {
                 return;
             }
 
+            console.log("clearing");
+
             this.$el.find("svg").remove();
-            clearTimeout(that.timer_label_relax);
-            clearTimeout(that.timer_auto_transition);
-            clearTimeout(that.timer_auto_transition_resume);
+            clearTimeout(window.timer_label_relax);
+            clearTimeout(window.timer_auto_transition);
+            clearTimeout(window.timer_auto_transition_resume);
             $("#ribbon_dropdown").unbind("change").val("__ALL__");
 
-            function config_default(setting, is_float, default_value) {
+            function config_default(setting, default_value) {
                 var value = config[that.getPropertyNamespaceInfo().propertyNamespace + setting];
 
                 if(value === undefined) {
@@ -173,34 +191,34 @@ function(
                     return default_value;
                 }
 
-                return is_float ? parseFloat(value) : value;
+                return typeof default_value === "number" ? parseFloat(value) : value;
             }
 
             var ribbon_choice = "__ALL__",
                 animation = false,
                 // descriptions of each config setting in formatter.html
-                width                        = config_default("width",                        true,  that.$el.width() * 0.8),
-                height                       = config_default("height",                       true,  width * 0.8),
-                radius                       = config_default("radius",                       true,  width / 2 * 0.55),
-                radius_label                 = config_default("radius_label",                 true,  radius * 1.1),
-                thickness                    = config_default("thickness",                    true,  radius * 0.07),
-                ribbon_radius_cp_offset      = config_default("ribbon_radius_cp_offset",      true,  radius * 0.2),
-                outer_colors                 = config_default("outer_colors",                 false, "schemeCategory20b"),
-                radius_pack                  = config_default("radius_pack",                  true,  0.8 * (radius - thickness)),
-                padding_pack                 = config_default("padding_pack",                 true,  radius * 0.1),
-                opacity_ribbon               = config_default("opacity_ribbon",               true,  0.6),
-                opacity_fade                 = config_default("opacity_fade",                 true,  0.1),
-                label_font_size              = config_default("label_font_size",              true,  radius * 0.04),
-                label_spacing                = config_default("label_spacing",                true,  radius * 0.01),
-                label_wrap_length            = config_default("label_wrap_length",            true,  radius * 0.7),
-                inner_labels_scale           = config_default("inner_labels_scale",           true,  0.9),
-                label_relax_delta            = config_default("label_relax_delta",            true,  0.5),
-                label_relax_sleep            = config_default("label_relax_sleep",            true,  10),
-                auto_transition              = config_default("auto_transition",              false, "never"),
-                auto_transition_sleep        = config_default("auto_transition_sleep",        true,  2000),
-                auto_transition_resume_sleep = config_default("auto_transition_resume_sleep", true,  5000),
-                draggable                    = config_default("draggable",                    false, "on"),
-                transition_duration          = config_default("transition_duration",          true,  750);
+                width                        = config_default("width",                        that.$el.width() * 0.8),
+                height                       = config_default("height",                       width * 0.8),
+                radius                       = config_default("radius",                       width / 2 * 0.55),
+                radius_label                 = config_default("radius_label",                 radius * 1.1),
+                thickness                    = config_default("thickness",                    radius * 0.07),
+                ribbon_radius_cp_offset      = config_default("ribbon_radius_cp_offset",      radius * 0.2),
+                outer_colors                 = config_default("outer_colors",                 "schemeCategory20b"),
+                radius_pack                  = config_default("radius_pack",                  0.8 * (radius - thickness)),
+                padding_pack                 = config_default("padding_pack",                 radius * 0.1),
+                opacity_ribbon               = config_default("opacity_ribbon",               0.6),
+                opacity_fade                 = config_default("opacity_fade",                 0.1),
+                label_font_size              = config_default("label_font_size",              radius * 0.04),
+                label_spacing                = config_default("label_spacing",                radius * 0.01),
+                label_wrap_length            = config_default("label_wrap_length",            radius * 0.7),
+                inner_labels_scale           = config_default("inner_labels_scale",           0.9),
+                label_relax_delta            = config_default("label_relax_delta",            0.5),
+                label_relax_sleep            = config_default("label_relax_sleep",            10),
+                auto_transition              = config_default("auto_transition",              "never"),
+                auto_transition_sleep        = config_default("auto_transition_sleep",        2000),
+                auto_transition_resume_sleep = config_default("auto_transition_resume_sleep", 5000),
+                draggable                    = config_default("draggable",                    "on"),
+                transition_duration          = config_default("transition_duration",          750);
 
             var color_outer = d3.scaleOrdinal(d3[outer_colors] || d3_scale_chromatic[outer_colors]);
 
@@ -536,7 +554,7 @@ function(
                         return y;
                     });
 
-                    that.timer_label_relax = setTimeout(label_relax, label_relax_sleep)
+                    window.timer_label_relax = setTimeout(label_relax, label_relax_sleep)
                 }
             }
 
@@ -1046,7 +1064,7 @@ function(
 
             function start_auto_transition() {
                 if(auto_transition !== "never") {
-                    that.timer_auto_transition = setInterval(ribbon_controls_choose_next, auto_transition_sleep);
+                    window.timer_auto_transition = setInterval(ribbon_controls_choose_next, auto_transition_sleep);
                 }
             }
 
@@ -1055,11 +1073,11 @@ function(
                     return;
                 }
 
-                clearTimeout(that.timer_auto_transition);
-                clearTimeout(that.timer_auto_transition_resume);
+                clearTimeout(window.timer_auto_transition);
+                clearTimeout(window.timer_auto_transition_resume);
 
                 if(auto_transition === "resume") {
-                    that.timer_auto_transition_resume = setTimeout(start_auto_transition, auto_transition_resume_sleep);
+                    window.timer_auto_transition_resume = setTimeout(start_auto_transition, auto_transition_resume_sleep);
                 }
             }
 
@@ -1300,17 +1318,6 @@ function(
                                     });
                             });
                 });
-        },
-
-        // Search data params
-        getInitialDataParams: function() {
-            return ({
-                outputMode: SplunkVisualizationBase.RAW_OUTPUT_MODE,
-                count: 1000000
-            });
-        },
-
-        // Override to respond to re-sizing events
-        reflow: function() {}
+        }
     });
 });
