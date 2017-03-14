@@ -7,7 +7,7 @@
 | eval count=round(spent)
 | eval ribbon=toward
 | eval ribbon_color=if(toward="supporting", "#2ca02c", "#d62728")
-| eval outer_link=if(committee_id="none", null(), "https://beta.fec.gov/data/committee/".committee_id)
+| eval outer_link=if(committee_id="none", null(), "https://beta.fec.gov/data/committee/".committee_id."/?cycle=2016&amp;tab=independent-expenditures-committee")
 | eval inner_link="https://beta.fec.gov/data/candidate/".candidate_id."/?cycle=2016&amp;election_full=true"
 | eval inner_img="/static/app/viz_halo/".candidate."_head.jpg"
 | table outer* ribbon* inner* count</query>
@@ -16,7 +16,7 @@
     <panel>
       <html>
         <p>Data aggregated from the <a href="https://beta.fec.gov/" target="_blank">Federal Election Committee</a>.</p>
-        <p>Visit <a href="http://splunk4good.com/elections" target="_blank">http://splunk4good.com/elections</a> for the full write-up, including the technical discussion.</p>
+        <p>Visit <a href="http://elections.splunk4good.com" target="_blank">http://elections.splunk4good.com</a> for the full write-up, including the technical discussion.</p>
       </html>
     </panel>
   </row>
