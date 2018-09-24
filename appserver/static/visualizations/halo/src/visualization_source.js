@@ -397,13 +397,20 @@ function(
                         this._current = d;
                     });
 
+            var unique_outer = [];
+
             var label_group = label.selectAll("g.label-group")
                 .data(pie_outer(data.outer))
                 .enter()
                 .append("g")
                     .attr("class", "label-group")
-                    .attr("visibility", function() {
-                        return label_font_size > 0 ? "visible" : "hidden";
+                    .attr("visibility", function(d) {
+                        if(label_font_size > 0 && !unique_outer.includes(d.data.outer)) {
+                            unique_outer.push(d.data.outer);
+                            return "visible";
+                        }
+
+                        return "hidden";
                     })
                     .style("cursor", function(d) {
                         return d.data.outer_link ? "pointer" : "";
@@ -1154,16 +1161,23 @@ function(
                                 };
                             });
 
+                    var unique_outer = [];
+
                     label_group
                         .attr("visibility", "visible")
                         .transition()
                         .duration(transition_duration)
                             .style("opacity", function(d) {
-                                return d.data.ribbon === ribbon_choice || ribbon_choice === "__ALL__" ? 1.0 : 0.0;
+                                if(label_font_size > 0 && !unique_outer.includes(d.data.outer) && (d.data.ribbon === ribbon_choice || ribbon_choice === "__ALL__")) {
+                                    unique_outer.push(d.data.outer);
+                                    return 1.0;
+                                }
+
+                                return 0.0;
                             })
                             .on("end", function() {
                                 d3.select(this).attr("visibility", function(d) {
-                                    return d.data.ribbon === ribbon_choice || ribbon_choice === "__ALL__" ? "visible" : "hidden";
+                                    return $(this).css("opacity") == "1" ? "visible" : "hidden";
                                 });
                             });
 
