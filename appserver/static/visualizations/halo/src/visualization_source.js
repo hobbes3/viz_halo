@@ -297,6 +297,10 @@ function(
                 inner_label_text
                     .transition()
                     .style("opacity", 1.0);
+
+                inner_circle_outline
+                    .transition()
+                    .style("opacity", 1.0);
             }
 
             function mouseover_outer(d) {
@@ -352,6 +356,12 @@ function(
                     });
 
                 inner_label_text
+                    .transition()
+                    .style("opacity", function(dd) {
+                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
+                    });
+
+                inner_circle_outline
                     .transition()
                     .style("opacity", function(dd) {
                         return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
@@ -754,6 +764,12 @@ function(
                     .style("opacity", function(dd) {
                         return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
                     });
+
+                inner_circle_outline
+                    .transition()
+                    .style("opacity", function(dd) {
+                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
+                    });
             }
 
             function click_center(d) {
@@ -894,6 +910,12 @@ function(
                     .style("opacity", function(dd) {
                         return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
                     });
+
+                inner_circle_outline
+                    .transition()
+                    .style("opacity", function(dd) {
+                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
+                    });
             }
 
             var path_inner_g = node_inner_g.selectAll("g.arc_inner")
@@ -970,6 +992,19 @@ function(
                 return path.toString();
             }
 
+            var inner_circle_outline = node_inner_g
+                .append("circle")
+                    .attr("cx", 0)
+                    .attr("cy", 0)
+                    .attr("r", function(d) {
+                        return d.r - thickness;
+                    })
+                    .attr("fill", "none")
+                    .attr("stroke-width", 2)
+                    .attr("stroke", function(d) {
+                        return d.data.data[0].inner_color;
+                    });
+
             function mouseover_ribbon(d) {
                 stop_auto_animation();
 
@@ -1011,6 +1046,12 @@ function(
                     });
 
                 inner_label_text
+                    .transition()
+                    .style("opacity", function(dd) {
+                        return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
+                    });
+
+                inner_circle_outline
                     .transition()
                     .style("opacity", function(dd) {
                         return d.data.inner === dd.data.inner ? 1.0 : opacity_fade;
