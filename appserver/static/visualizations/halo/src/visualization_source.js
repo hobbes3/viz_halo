@@ -1323,6 +1323,13 @@ function(
                                 return d.value === 0 ? 0.0 : opacity_ribbon;
                             });
 
+                    inner_circle_outline.data(bubble_inner(root).children)
+                        .transition()
+                        .duration(transition_duration)
+                            .attr("r", function(d) {
+                                return Math.max(d.r - thickness, 0);
+                            });
+
                     image_clip.data(bubble_inner(root).children)
                         .transition()
                         .duration(transition_duration)
