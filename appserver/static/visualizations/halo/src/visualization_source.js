@@ -201,10 +201,11 @@ function(
                 height                       = config_default("height",                       width * 0.8),
                 radius                       = config_default("radius",                       width / 2 * 0.55),
                 radius_label                 = config_default("radius_label",                 radius * 1.1),
-                thickness                    = config_default("thickness",                    radius * 0.07),
+                outer_thickness              = config_default("outer_thickness",              radius * 0.07),
+                inner_thickness_pct          = config_default("inner_thickness_pct",          0.8),
                 ribbon_radius_cp_offset      = config_default("ribbon_radius_cp_offset",      radius * 0.2),
                 outer_colors                 = config_default("outer_colors",                 "schemeCategory20b"),
-                radius_pack                  = config_default("radius_pack",                  0.8 * (radius - thickness)),
+                radius_pack                  = config_default("radius_pack",                  0.8 * (radius - outer_thickness)),
                 padding_pack                 = config_default("padding_pack",                 radius * 0.1),
                 opacity_ribbon               = config_default("opacity_ribbon",               0.6),
                 opacity_fade                 = config_default("opacity_fade",                 0.1),
@@ -264,7 +265,7 @@ function(
                     .attr("class", "front");
 
             var arc_outer = d3.arc()
-                .innerRadius(radius - thickness)
+                .innerRadius(radius - outer_thickness)
                 .outerRadius(radius);
 
             var pie_outer = d3.pie()
@@ -404,13 +405,16 @@ function(
                 .enter()
                 .append("g")
                     .attr("class", "label-group")
-                    .attr("visibility", function(d) {
+                    .style("opacity", function(d) {
                         if(label_font_size > 0 && !unique_outer.includes(d.data.outer)) {
                             unique_outer.push(d.data.outer);
-                            return "visible";
+                            return 1.0;
                         }
 
-                        return "hidden";
+                        return 0.0;
+                    })
+                    .attr("visibility", function(d) {
+                        return $(this).css("opacity") == "1" ? "visible" : "hidden";
                     })
                     .style("cursor", function(d) {
                         return d.data.outer_link ? "pointer" : "";
@@ -648,7 +652,7 @@ function(
                     var relative_x = d3.event.x - radius_pack,
                         relative_y = radius_pack - d3.event.y,
                         relative_r = Math.sqrt(Math.pow(relative_x, 2) + Math.pow(relative_y, 2)),
-                        limit_r = radius - 2 * thickness - d.r;
+                        limit_r = radius - 2 * outer_thickness - d.r;
 
                     if(relative_r >= limit_r) {
                         var theta = Math.atan2(relative_y, relative_x),
@@ -707,7 +711,7 @@ function(
                     .attr("cx", 0)
                     .attr("cy", 0)
                     .attr("r", function(d) {
-                        return d.r - thickness;
+                        return d.r * inner_thickness_pct;
                     });
 
             function mouseover_center(d) {
@@ -790,16 +794,16 @@ function(
             var image = node_inner_g
                 .append("image")
                     .attr("x", function(d) {
-                        return thickness - d.r;
+                        return -d.r * inner_thickness_pct;
                     })
                     .attr("y", function(d) {
-                        return thickness - d.r;
+                        return -d.r * inner_thickness_pct;
                     })
                     .attr("width", function(d) {
-                        return 2 * (d.r - thickness);
+                        return 2 * (d.r * inner_thickness_pct);
                     })
                     .attr("height", function(d) {
-                        return 2 * (d.r - thickness);
+                        return 2 * (d.r * inner_thickness_pct);
                     })
                     .attr("xlink:href", function(d) {
                         return d.data.data[0].inner_img;
@@ -842,7 +846,7 @@ function(
                     return "";
                 }
 
-                var r = d.r - thickness,
+                var r = d.r * inner_thickness_pct,
                     h = 2 * r / bb.height,
                     w = 2 * r / bb.width,
                     s = w < h ? w : h,
@@ -965,7 +969,7 @@ function(
             function ribbon_d_path(d) {
                 if(d.value === 0) return "";
 
-                var r_o = radius - thickness,
+                var r_o = radius - outer_thickness,
                     offset = -Math.PI / 2,
                     path_o_start = d.startAngle + offset,
                     path_o_end   = d.endAngle   + offset,
@@ -1004,7 +1008,7 @@ function(
                     .attr("cx", 0)
                     .attr("cy", 0)
                     .attr("r", function(d) {
-                        return d.r - thickness;
+                        return d.r * inner_thickness_pct;
                     })
                     .attr("fill", "none")
                     .attr("stroke-width", 2)
@@ -1087,7 +1091,7 @@ function(
             path_inner = path_inner_g
                 .append("path")
                     .attr("d", function(d) {
-                        d.innerRadius = d.r - thickness;
+                        d.innerRadius = d.r * inner_thickness_pct;
                         d.outerRadius = d.r;
 
                         return arc_inner(d);
@@ -1314,7 +1318,7 @@ function(
                         .transition()
                         .duration(transition_duration)
                             .attrTween("d", function(d) {
-                                d.innerRadius = d.r - thickness;
+                                d.innerRadius = d.r * inner_thickness_pct;
                                 d.outerRadius = d.r;
                                 var i = d3.interpolate(this._current, d);
                                 this._current = i(0);
@@ -1341,30 +1345,30 @@ function(
                         .transition()
                         .duration(transition_duration)
                             .attr("r", function(d) {
-                                return Math.max(d.r - thickness, 0);
+                                return Math.max(d.r * inner_thickness_pct, 0);
                             });
 
                     image_clip.data(bubble_inner(root).children)
                         .transition()
                         .duration(transition_duration)
                             .attr("r", function(d) {
-                                return Math.max(d.r - thickness, 0);
+                                return Math.max(d.r * inner_thickness_pct, 0);
                             });
 
                     image.data(bubble_inner(root).children)
                         .transition()
                         .duration(transition_duration)
                             .attr("x", function(d) {
-                                return thickness - d.r;
+                                return -d.r * inner_thickness_pct;
                             })
                             .attr("y", function(d) {
-                                return thickness - d.r;
+                                return -d.r * inner_thickness_pct;
                             })
                             .attr("width", function(d) {
-                                return Math.max(2 * (d.r - thickness), 0);
+                                return Math.max(2 * (d.r * inner_thickness_pct), 0);
                             })
                             .attr("height", function(d) {
-                                return Math.max(2 * (d.r - thickness), 0);
+                                return Math.max(2 * (d.r * inner_thickness_pct), 0);
                             });
 
                     inner_label_text.data(bubble_inner(root).children)
