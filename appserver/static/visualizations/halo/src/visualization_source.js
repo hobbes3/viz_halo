@@ -146,9 +146,22 @@ function(
             data.inner = _(data.outer).chain()
                 .groupBy("inner")
                 .map(function(v, k) {
+                    var inner_img = v[0].inner_img;
+                    $.ajax({
+                        "url": inner_img,
+                        "type": "get",
+                        "async": false,
+                        "error": function() {
+                            inner_img = null;
+                        }
+                    });
+
                     return {
                         "_index": i++,
                         "inner": k,
+                        "inner_img": inner_img,
+                        "inner_link": v[0].inner_link || null,
+                        "inner_color": v[0].inner_color || null,
                         "data": v
                     };
                 })
@@ -738,7 +751,7 @@ function(
                         "<br>" + ribbon_choice + ": " + pct_label(pct_ribbon) + " of total amount";
                 }
 
-                if(d.data.data[0].inner_link) {
+                if(d.data.inner_link) {
                     html += "<br><i>Click for more details</i>";
                 }
 
@@ -784,7 +797,7 @@ function(
             }
 
             function click_center(d) {
-                var link = d.data.data[0].inner_link;
+                var link = d.data.inner_link;
 
                 if(link) {
                     window.open(link, "_blank");
@@ -806,10 +819,10 @@ function(
                         return 2 * (d.r * inner_thickness_pct);
                     })
                     .attr("xlink:href", function(d) {
-                        return d.data.data[0].inner_img;
+                        return d.data.inner_img;
                     })
                     .style("cursor", function(d) {
-                        return d.data.data[0].inner_link ? "pointer" : "";
+                        return d.data.inner_link ? "pointer" : "";
                     })
                     .style("clip-path", function(d) {
                         return "url(#clip_" + d.data._index + ")";
@@ -818,46 +831,6 @@ function(
                     .on("mousemove", tooltip_position)
                     .on("mouseout", mouseout_default)
                     .on("click", click_center);
-
-            var inner_label_text = node_inner_g
-                .append("text")
-                    .attr("class", "label-inner")
-                    .attr("x", 0)
-                    .attr("y", 0)
-                    .attr("alignment-baseline", "middle")
-                    .attr("text-anchor", "middle")
-                    .attr("opacity", 1.0)
-                    .attr("visibility", inner_labels_scale > 0 ? "visible" : "hidden")
-                    .text(function(d) {
-                        return d.data.inner;
-                    })
-                    .style("cursor", function(d) {
-                        return d.data.data[0].inner_link ? "pointer" : "";
-                    })
-                    .on("mouseover", mouseover_center)
-                    .on("mousemove", tooltip_position)
-                    .on("mouseout", mouseout_default)
-                    .on("click", click_center);
-
-            function inner_label_resize(d) {
-                var bb = this.getBBox();
-
-                if(bb.width === 0 && bb.height === 0) {
-                    return "";
-                }
-
-                var r = d.r * inner_thickness_pct,
-                    h = 2 * r / bb.height,
-                    w = 2 * r / bb.width,
-                    s = w < h ? w : h,
-                    s = s * inner_labels_scale;
-
-                return "scale(" + s + "," + s + ")";
-            }
-
-            node_inner_g.selectAll("text.label-inner")
-                .attr("transform", inner_label_resize)
-                .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black");
 
             var arc_inner = d3.arc();
 
@@ -943,6 +916,61 @@ function(
                     .on("mousemove", tooltip_position)
                     .on("mouseout", mouseout_default);
 
+            var inner_circle_outline = node_inner_g
+                .append("circle")
+                    .attr("cx", 0)
+                    .attr("cy", 0)
+                    .attr("r", function(d) {
+                        return d.r * inner_thickness_pct;
+                    })
+                    .attr("fill", "none")
+                    .attr("stroke-width", 2)
+                    .attr("stroke", function(d) {
+                        return d.data.inner_color;
+                    });
+
+            var inner_label_text = node_inner_g
+                .append("text")
+                    .attr("class", "label-inner")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("alignment-baseline", "middle")
+                    .attr("text-anchor", "middle")
+                    .attr("opacity", 1.0)
+                    .attr("visibility", inner_labels_scale > 0 ? "visible" : "hidden")
+                    .text(function(d) {
+                        return d.data.inner;
+                    })
+                    .style("cursor", function(d) {
+                        return d.data.inner_link ? "pointer" : "";
+                    })
+                    .on("mouseover", mouseover_center)
+                    .on("mousemove", tooltip_position)
+                    .on("mouseout", mouseout_default)
+                    .on("click", click_center);
+
+            function inner_label_resize(d) {
+                var bb = this.getBBox();
+
+                if(bb.width === 0 && bb.height === 0) {
+                    return "";
+                }
+
+                var r = d.r * inner_thickness_pct,
+                    h = 2 * r / bb.height,
+                    w = 2 * r / bb.width,
+                    s = w < h ? w : h,
+                    s = s * inner_labels_scale;
+
+                var translate = d.data.inner_img ? "translate(0," + r + ")" : "";
+
+                return translate + " scale(" + s + "," + s + ")";
+            }
+
+            node_inner_g.selectAll("text.label-inner")
+                .attr("transform", inner_label_resize)
+                .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black");
+
             function ribbon_data(data) {
                 return pie_outer(data.outer).map(function(d) {
                     var node = bubble_inner(root).children
@@ -1002,19 +1030,6 @@ function(
 
                 return path.toString();
             }
-
-            var inner_circle_outline = node_inner_g
-                .append("circle")
-                    .attr("cx", 0)
-                    .attr("cy", 0)
-                    .attr("r", function(d) {
-                        return d.r * inner_thickness_pct;
-                    })
-                    .attr("fill", "none")
-                    .attr("stroke-width", 2)
-                    .attr("stroke", function(d) {
-                        return d.data.data[0].inner_color;
-                    });
 
             function mouseover_ribbon(d) {
                 stop_auto_animation();
