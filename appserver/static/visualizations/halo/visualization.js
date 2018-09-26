@@ -969,7 +969,9 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        return d.r * inner_thickness_pct;
 	                    })
 	                    .attr("fill", "none")
-	                    .attr("stroke-width", 2)
+	                    .attr("stroke-width", function(d) {
+	                        return d.r * inner_thickness_pct * 0.1;
+	                    })
 	                    .attr("stroke", function(d) {
 	                        return d.data.inner_color;
 	                    });
@@ -1005,7 +1007,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    h = 2 * r / bb.height,
 	                    w = 2 * r / bb.width,
 	                    s = w < h ? w : h,
-	                    s = s * inner_labels_scale;
+	                    s = Math.max(s * inner_labels_scale, 1);
 
 	                var translate = d.data.inner_img ? "translate(0," + r + ")" : "";
 
@@ -1405,14 +1407,17 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        .transition()
 	                        .duration(transition_duration)
 	                            .attr("r", function(d) {
-	                                return Math.max(d.r * inner_thickness_pct, 0);
+	                                return d.r * inner_thickness_pct;
+	                            })
+	                            .attr("stroke-width", function(d) {
+	                                return d.r * inner_thickness_pct * 0.1;
 	                            });
 
 	                    image_clip.data(bubble_inner(root).children)
 	                        .transition()
 	                        .duration(transition_duration)
 	                            .attr("r", function(d) {
-	                                return Math.max(d.r * inner_thickness_pct, 0);
+	                                return d.r * inner_thickness_pct;
 	                            });
 
 	                    image.data(bubble_inner(root).children)
@@ -1425,10 +1430,10 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                                return -d.r * inner_thickness_pct;
 	                            })
 	                            .attr("width", function(d) {
-	                                return Math.max(2 * (d.r * inner_thickness_pct), 0);
+	                                return 2 * d.r * inner_thickness_pct;
 	                            })
 	                            .attr("height", function(d) {
-	                                return Math.max(2 * (d.r * inner_thickness_pct), 0);
+	                                return 2 * d.r * inner_thickness_pct;
 	                            });
 
 	                    inner_label_text.data(bubble_inner(root).children)
