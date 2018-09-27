@@ -81,7 +81,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	        getInitialDataParams: function() {
 	            return ({
 	                outputMode: SplunkVisualizationBase.RAW_OUTPUT_MODE,
-	                count: 1000000
+	                count: 10000
 	            });
 	        },
 
@@ -526,6 +526,15 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        this._current = d;
 	                    });
 
+	            // https://stackoverflow.com/a/3700369/1150923
+	            function unescapeHtml(encoded) {
+	                var elem = document.createElement('textarea');
+	                elem.innerHTML = encoded;
+	                var decoded = elem.value;
+
+	                return decoded;
+	            }
+
 	            // https://bl.ocks.org/mbostock/7555321
 	            function label_wrap(text, width) {
 	                text.each(function() {
@@ -668,7 +677,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    .attr("dominant-baseline", "middle")
 	                    .style("font-size", label_font_size)
 	                    .text(function (d) {
-	                        return d.data.outer;
+	                        return unescapeHtml(d.data.outer);
 	                    })
 	                    .each(function(d) {
 	                        this._current = d;
@@ -986,7 +995,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    .attr("opacity", 1.0)
 	                    .attr("visibility", inner_labels_scale > 0 ? "visible" : "hidden")
 	                    .text(function(d) {
-	                        return d.data.inner;
+	                        return unescapeHtml(d.data.inner);
 	                    })
 	                    .style("cursor", function(d) {
 	                        return d.data.inner_link ? "pointer" : "";
