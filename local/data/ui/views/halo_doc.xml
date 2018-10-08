@@ -60,6 +60,12 @@
               <td>The numerical value for a given <code>outer</code> to <code>ribbon</code> to <code>inner</code> connection.</td>
             </tr>
             <tr>
+              <td><code>inner_color</code></td>
+              <td>No</td>
+              <td>Yes</td>
+              <td>The color of the ring inside the inner rings. These colors help distinguish and categorize inner rings. For example, red inner rings can mean Republicans and blue can mean Democrats.</td>
+            </tr>
+            <tr>
               <td><code>outer_link</code></td>
               <td>No</td>
               <td>Yes</td>
@@ -74,8 +80,8 @@
             <tr>
               <td><code>inner_img</code></td>
               <td>No</td>
-              <td>No</td>
-              <td>The URL of the image for the inner rings. The image should be a perfect square. Each <code>inner</code> should always have the same <code>inner_img</code>, but the visualization will just pick the first pair it sees. Inner segments with empty/null values will be unclickable. To use a local image, place the image in the app's <code>appserver/static/</code> folder and reference the image by <code>/static/app/&lt;app_name&gt;/&lt;img_name&gt;.jpg</code> (doesn't have to be jpg). A Splunk restart will be required for Splunk to recognize the new static files.</td>
+              <td>Yes</td>
+              <td>The URL of the image for the inner rings. The image should be a perfect square. Each <code>inner</code> should always have the same <code>inner_img</code>, but the visualization will just pick the first pair it sees. Inner segments with empty/null values will be unclickable. To use a local image, place the image in the app's <code>appserver/static/</code> folder and reference the image by <code>/static/app/&lt;app_name&gt;/&lt;img_name&gt;.jpg</code> (doesn't have to be jpg). A Splunk restart will be required for Splunk to recognize the new static files. If the URL is invalid or the image is missing, then the Halo visualization will ignore it.</td>
             </tr>
           </tbody>
         </table>
@@ -96,13 +102,13 @@
               <td>Size</td>
               <td>Width</td>
               <td><code>width = this.$el.width() * 0.8</code> (ie 80% of the panel width)</td>
-              <td>The canvas width of the halo viz. Increase this and/or panel width/height if you see clipping.</td>
+              <td>The canvas width of the halo viz. Increase this and/or panel width/height if there is clipping.</td>
             </tr>
             <tr>
               <td>Size</td>
               <td>Height</td>
               <td><code>height = width * 0.8</code></td>
-              <td>The canvas height of the halo viz. Increase this and/or panel width/height if you see clipping.</td>
+              <td>The canvas height of the halo viz. Increase this and/or panel width/height if there is clipping.</td>
             </tr>
             <tr>
               <td>Size</td>
@@ -118,9 +124,15 @@
             </tr>
             <tr>
               <td>Size</td>
-              <td>Ring Thickness</td>
-              <td><code>thickness = radius * 0.07</code></td>
-              <td>The thickness of the outer and inner rings.</td>
+              <td>Outer Ring Thickness</td>
+              <td><code>outer_thickness = radius * 0.07</code></td>
+              <td>The thickness of the outer rings.</td>
+            </tr>
+            <tr>
+              <td>Size</td>
+              <td>Inner Ring Thickness Percentage</td>
+              <td><code>inner_thickness_pct = 0.8</code></td>
+              <td>The thickness of the inner rings. The thickness is a percentage since the radius of the inner rings is dynamic.</td>
             </tr>
             <tr>
               <td>Size</td>
@@ -139,6 +151,60 @@
               <td>Ribbon Curvature</td>
               <td><code>ribbon_radius_cp_offset = radius * 0.2</code></td>
               <td>The curvature of the ribbon from the inner rings. Setting to 0 disable curvature (meaning the ribbons will be straight lines from the inner rings to the outer ring). The offset is the (one and only) control point of the Bézier curve from the inner rings.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Warning Override</td>
+              <td><code>warning_override = "false"</code></td>
+              <td>This visualization has built-in warnings to prevent browser slowness or crashes when there are too many objects for d3 to draw. If some of the grouping limits are set too high, then the warnings will appear and the visualization will not draw. Selecting this to <code>true</code> will ignore these warnings and proceed to draw the visualization.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Outer Ring Grouping Limit</td>
+              <td><code>group_outer_limit = 30</code></td>
+              <td>The limit for the top outer rings by total value. All other outer rings will be grouped into "others".</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Inner Ring Grouping Limit</td>
+              <td><code>group_inner_limit = 10</code></td>
+              <td>The limit for the top inner rings by total value excluding "others". All other inner rings will be grouped into "others".</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Outer Ring Show Others</td>
+              <td><code>group_use_others_outer = "true"</code></td>
+              <td>Show the "others" group for the outer rings.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Inner Ring Show Others</td>
+              <td><code>group_use_others_inner = "true"</code></td>
+              <td>Show the "others" group for the inner rings.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Outer Ring Outers Label</td>
+              <td><code>group_others_outer_label = "others"</code></td>
+              <td>The label for the outer rings "others" group.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Inner Ring Others Label</td>
+              <td><code>group_others_inner_label = "others"</code></td>
+              <td>The label for the inner rings "others" group.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Inner Ring Others Color</td>
+              <td><code>group_others_inner_color = "grey"</code></td>
+              <td>The inner ring color for "others".</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Inner Ring Others Image</td>
+              <td><code>group_use_others_inner = "true"</code></td>
+              <td>The URL of the image for the "others" inner ring. Similar to <code>inner_img</code> field.</td>
             </tr>
             <tr>
               <td>Color</td>
@@ -211,7 +277,7 @@
             <tr>
               <td>Animation</td>
               <td>Inner Rings Draggable</td>
-              <td><code>draggable = "on"</code></td>
+              <td><code>draggable = "true"</code></td>
               <td>If auto transition is turned on then how many millisecond to wait before the visualization transitions to the next ribbon type. This value should be higher than transition duration.</td>
             </tr>
             <tr>
@@ -235,7 +301,7 @@
           </tbody>
         </table>
         <h1>Tips</h1>
-        <p>The Halo visualization looks best when there are at least 3 ribbons per ribbon type per inner ring. If there aren't enough ribbons then the ribbons may cross and look weird.</p>
+        <p>The Halo visualization looks best when there are at least 3 ribbons per ribbon type per inner ring. If there aren't enough ribbons then the ribbons may cross and look weird. On the other hand, if there are too many ribbons or rings, then visualization will be slow and look very messy. The built-in warning will attempt to stop drawing if it detects too many objects.</p>
         <p>The outer and inner rings should be in separate sets. If they are in the same set then consider using a <a href="https://bost.ocks.org/mike/uberdata/" target="_blank">Chord diagram</a> instead. A Chord diagram for Splunk is available in the <a href="https://splunkbase.splunk.com/app/2717/" target="_blank">Custom Visualization (legacy)</a> app.</p>
       </html>
     </panel>
