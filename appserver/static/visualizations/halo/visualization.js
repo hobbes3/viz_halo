@@ -81,7 +81,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	        getInitialDataParams: function() {
 	            return ({
 	                outputMode: SplunkVisualizationBase.RAW_OUTPUT_MODE,
-	                count: 10000
+	                count: 100000
 	            });
 	        },
 
@@ -90,10 +90,12 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	        },
 
 	        // Optionally implement to format data returned from search.
-	        // The returned object will be passed to updateView as 'data'
+	        // The returned object will be passed to updateView as 'rows'
 	        formatData: function(raw_data) {
 	            console.log("formatData");
-	            if(raw_data.results.length < 1) {
+	            var rows = raw_data.results;
+
+	            if(rows.length < 1) {
 	                return false;
 	            }
 
@@ -109,36 +111,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                );
 	            }
 
-	            _.mixin({
-	                "total": function(data, key) {
-	                    return _(data).chain()
-	                        .pluck(key)
-	                        .reduce(function(memo, num) {
-	                            return memo + num;
-	                        }, 0)
-	                        .value();
-	                }
-	            });
-
-	            function by_ribbon(data, inner) {
-	                return _(data).chain()
-	                    .groupBy("ribbon")
-	                    .map(function(v, k) {
-	                        var obj = {
-	                            "ribbon": k,
-	                            "total": _(v).total("count")
-	                        }
-
-	                        if(inner) {
-	                            obj.inner = inner;
-	                        }
-
-	                        return obj;
-	                })
-	                .value();
-	            };
-
-	            raw_data.results = _(raw_data.results).map(function(o) {
+	            rows = _(rows).map(function(o) {
 	                _(required_fields).each(function(k) {
 	                    o[k] = SplunkVisualizationUtils.escapeHtml(o[k])
 	                });
@@ -157,62 +130,13 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                return o;
 	            });
 
-	            var data = {};
+	            if(!this.orig_rows) {
+	                // Deep copy the original raw data
+	                // https://stackoverflow.com/a/23481096/1150923
+	                this.orig_rows = JSON.parse(JSON.stringify(rows))
+	            }
 
-	            data.stats = {
-	                "total": _(raw_data.results).total("count"),
-	                "ribbon": by_ribbon(raw_data.results, null),
-	                "inner": _(raw_data.results).chain()
-	                        .groupBy("inner")
-	                        .map(function(v, k) {
-	                            return {
-	                                "inner": k,
-	                                "total": _(v).total("count"),
-	                                "ribbon": by_ribbon(v, k)
-	                            };
-	                        })
-	                        .value()
-	            };
-
-	            $("#ribbon_dropdown option").not("[value='__ALL__']").remove();
-
-	            _(data.stats.ribbon).each(function(o) {
-	                $("#ribbon_dropdown").append('<option value="' + o.ribbon + '">' + o.ribbon + '</option>');
-	            });
-
-	            data.outer = _(raw_data.results).map(function(v, i) {
-	                v._index = i;
-
-	                return v;
-	            });
-
-	            var i = 0;
-
-	            data.inner = _(data.outer).chain()
-	                .groupBy("inner")
-	                .map(function(v, k) {
-	                    var inner_img = v[0].inner_img;
-	                    $.ajax({
-	                        "url": inner_img,
-	                        "type": "get",
-	                        "async": false,
-	                        "error": function() {
-	                            inner_img = null;
-	                        }
-	                    });
-
-	                    return {
-	                        "_index": i++,
-	                        "inner": k,
-	                        "inner_img": inner_img,
-	                        "inner_link": v[0].inner_link || null,
-	                        "inner_color": v[0].inner_color || null,
-	                        "data": v
-	                    };
-	                })
-	                .value();
-
-	            return data;
+	            return rows;
 	        },
 
 	        // Implement updateView to render a visualization.
@@ -223,9 +147,12 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 
 	            var that = this;
 
-	            if(!data) {
+	            if(!that.orig_rows) {
 	                return;
 	            }
+
+	            // Deep copy again
+	            var rows = JSON.parse(JSON.stringify(that.orig_rows))
 
 	            console.log("clearing");
 
@@ -267,6 +194,14 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                padding_pack                 = config_default("padding_pack",                 radius * 0.1),
 	                opacity_ribbon               = config_default("opacity_ribbon",               0.6),
 	                opacity_fade                 = config_default("opacity_fade",                 0.1),
+	                group_outer_limit            = config_default("group_outer_limit",            30),
+	                group_inner_limit            = config_default("group_inner_limit",            10),
+	                group_use_others_outer       = config_default("group_use_others_outer",       "true"),
+	                group_use_others_inner       = config_default("group_use_others_inner",       "true"),
+	                group_others_outer_label     = config_default("group_others_outer_label",     "others"),
+	                group_others_inner_label     = config_default("group_others_inner_label",     "others"),
+	                group_others_inner_color     = config_default("group_others_inner_color",     "grey"),
+	                group_others_inner_img       = config_default("group_others_inner_img",       null),
 	                label_font_size              = config_default("label_font_size",              radius * 0.04),
 	                label_spacing                = config_default("label_spacing",                radius * 0.01),
 	                label_wrap_length            = config_default("label_wrap_length",            radius * 0.7),
@@ -276,8 +211,166 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                auto_transition              = config_default("auto_transition",              "never"),
 	                auto_transition_sleep        = config_default("auto_transition_sleep",        2000),
 	                auto_transition_resume_sleep = config_default("auto_transition_resume_sleep", 5000),
-	                draggable                    = config_default("draggable",                    "on"),
-	                transition_duration          = config_default("transition_duration",          750);
+	                draggable                    = config_default("draggable",                    "true"),
+	                transition_duration          = config_default("transition_duration",          750),
+	                warning_override             = config_default("warning_override",             "false");
+
+	            _.mixin({
+	                "total": function(data, key) {
+	                    return _(data).chain()
+	                        .pluck(key)
+	                        .reduce(function(memo, num) {
+	                            return memo + num;
+	                        }, 0)
+	                        .value();
+	                }
+	            });
+
+	            function get_top(d, key, n) {
+	                return _(d).chain()
+	                    .groupBy(key)
+	                    .map(function(v, k) {
+	                        var o = {
+	                            "total": _(v).total("count")
+	                        };
+
+	                        o[key] = k;
+
+	                        return o;
+	                    })
+	                    .sortBy("total")
+	                    .reverse()
+	                    .first(n)
+	                    .map(function(v) {
+	                        return v[key];
+	                    })
+	                    .value();
+	            }
+
+	            var top_outer = get_top(rows, "outer", group_outer_limit);
+	            var top_inner = get_top(rows, "inner", group_inner_limit);
+
+	            rows = _(rows).chain()
+	                .map(function(v) {
+	                    if(!top_outer.includes(v.outer)) {
+	                        v.outer = group_use_others_outer === "true" ? group_others_outer_label : null;
+	                    }
+	                    if(!top_inner.includes(v.inner)) {
+	                        v.inner = group_use_others_inner === "true" ? group_others_inner_label : null;
+	                    }
+
+	                    return v;
+	                })
+	                .filter(function(v) {
+	                    return v.outer && v.inner;
+	                })
+	                .groupBy(function(v) {
+	                    return v.outer + "|||" + v.ribbon + "|||" + v.inner;
+	                })
+	                .map(function(v, k) {
+	                    var obj = v[0];
+	                    obj.count = _(v).total("count")
+
+	                    if(obj.inner == group_others_inner_label) {
+	                        obj.inner_img = group_others_inner_img;
+	                    }
+
+	                    return obj;
+	                })
+	                .value();
+
+	            if(warning_override === "false") {
+	                if(group_outer_limit > 100) {
+	                    throw new SplunkVisualizationBase.VisualizationError(
+	                        'Not recommended to have "Outer Group Limit">100. Decrease this value or enable "Warning Override".'
+	                    );
+	                }
+	                if(group_inner_limit > 50) {
+	                    throw new SplunkVisualizationBase.VisualizationError(
+	                        'Not recommended to have "Inner Group Limit">50. Decrease this value or enable "Warning Override".'
+	                    );
+	                }
+	                if(rows.length > 500) {
+	                    throw new SplunkVisualizationBase.VisualizationError(
+	                        'Not recommended to have over 500 rows/ribbons. Decrease "Outer/Inner Ring Grouping Limit" or enable "Warning Override". Current number of rows/ribbons after grouping: ' + rows.length
+	                    );
+	                }
+	            }
+
+	            var data = {};
+
+	            function by_ribbon(data, inner) {
+	                return _(data).chain()
+	                    .groupBy("ribbon")
+	                    .map(function(v, k) {
+	                        var o = {
+	                            "ribbon": k,
+	                            "total": _(v).total("count")
+	                        }
+
+	                        if(inner) {
+	                            o.inner = inner;
+	                        }
+
+	                        return o;
+	                })
+	                .value();
+	            };
+
+	            data.stats = {
+	                "total": _(rows).total("count"),
+	                "ribbon": by_ribbon(rows, null),
+	                "inner": _(rows).chain()
+	                        .groupBy("inner")
+	                        .map(function(v, k) {
+	                            return {
+	                                "inner": k,
+	                                "total": _(v).total("count"),
+	                                "ribbon": by_ribbon(v, k)
+	                            };
+	                        })
+	                        .value()
+	            };
+
+	            $("#ribbon_dropdown option").not("[value='__ALL__']").remove();
+
+	            _(data.stats.ribbon).each(function(o) {
+	                $("#ribbon_dropdown").append('<option value="' + o.ribbon + '">' + o.ribbon + '</option>');
+	            });
+
+	            data.outer = _(rows).map(function(v, i) {
+	                v._index = i;
+
+	                return v;
+	            });
+
+	            var i = 0;
+
+	            data.inner = _(data.outer).chain()
+	                .groupBy("inner")
+	                .map(function(v, k) {
+	                    var inner_img = v[0].inner_img;
+	                    $.ajax({
+	                        "url": inner_img,
+	                        "type": "get",
+	                        "async": false,
+	                        "error": function() {
+	                            inner_img = null;
+	                        }
+	                    });
+
+	                    var inner_color = (k == group_others_inner_label ? group_others_inner_color : v[0].inner_color) || null;
+
+	                    return {
+	                        "_index": i++,
+	                        "inner": k,
+	                        "inner_img": inner_img,
+	                        "inner_link": v[0].inner_link || null,
+	                        "inner_color": inner_color,
+	                        "data": v
+	                    };
+	                })
+	                .value();
 
 	            var color_outer = d3.scaleOrdinal(d3[outer_colors] || d3_scale_chromatic[outer_colors]);
 
@@ -764,7 +857,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        return "translate(" + [d.x, d.y] + ")";
 	                    });
 
-	            if(draggable === "on") {
+	            if(draggable === "true") {
 	                node_inner_g.call(drag);
 	            }
 
@@ -1025,7 +1118,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 
 	            node_inner_g.selectAll("text.label-inner")
 	                .attr("transform", inner_label_resize)
-	                .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black");
+	                .style("text-shadow", "-2px 0 black, 0 2px black, 2px 0 black, 0 -2px black");
 
 	            function ribbon_data(data) {
 	                return pie_outer(data.outer).map(function(d) {
@@ -1452,7 +1545,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                            .attr("visibility", inner_labels_scale > 0 ? "visible" : "hidden")
 	                            .on("end", function() {
 	                                d3.select(this)
-	                                    .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black")
+	                                    .style("text-shadow", "-2px 0 black, 0 2px black, 2px 0 black, 0 -2px black")
 	                                    .attr("visibility", function(d) {
 	                                        return d.value === 0 || inner_labels_scale === 0 ? "hidden" : "visible";
 	                                    });

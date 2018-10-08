@@ -54,6 +54,72 @@
         </div>
     </div>
 </form>
+<form class="splunk-formatter-section" section-label="Grouping">
+    <div class="control-group">
+        <label class="control-label">Warning Override</label>
+        <div class="controls controls-block">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.warning_override" value="false">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </splunk-select>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Outer Ring Grouping Limit</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.group_outer_limit"></splunk-text-input>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Inner Ring Grouping Limit</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.group_inner_limit"></splunk-text-input>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Outer Ring Show Others</label>
+        <div class="controls controls-block">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.group_use_others_outer" value="true">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </splunk-radio-input>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Inner Ring Show Others</label>
+        <div class="controls controls-block">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.group_use_others_inner" value="true">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </splunk-radio-input>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Outer Ring Others Label</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.group_others_outer_label"></splunk-text-input>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Inner Ring Others Label</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.group_others_inner_label"></splunk-text-input>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Inner Ring Other Color</label>
+        <div class="controls controls-block">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.group_others_inner_color" value="#808080">
+            </splunk-color-picker>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Inner Ring Other Image</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.group_others_inner_img"></splunk-text-input>
+        </div>
+    </div>
+</form>
 <form class="splunk-formatter-section" section-label="Color">
     <div class="control-group">
         <label class="control-label">Outer Ring Colors</label>
@@ -142,9 +208,9 @@
     <div class="control-group">
         <label class="control-label">Inner Rings Draggable</label>
         <div class="controls controls-block">
-            <splunk-select name="{{VIZ_NAMESPACE}}.draggable" value="on">
-                <option value="on">On</option>
-                <option value="off">Off</option>
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.draggable" value="true">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
             </splunk-select>
         </div>
     </div>
@@ -167,11 +233,3 @@
         </div>
     </div>
 </form>
-    <!--
-    <div class="control-group">
-     	    <label class="control-label">Critical color</label>
-    		<div class="controls controls-fill">
-                <splunk-color-picker name="{{VIZ_NAMESPACE}}.critical_color"></splunk-color-picker>
-            </div>
-    </div>
-    -->
