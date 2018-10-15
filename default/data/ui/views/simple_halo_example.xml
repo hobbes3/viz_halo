@@ -1,4 +1,4 @@
-<dashboard theme="light">
+<dashboard>
   <label>Simple Halo Example</label>
   <search id="base">
     <query>| inputlookup simple_halo_data.csv | eval outer_link=replace("https://www.mariowiki.com/".outer, " ", "_") | eval inner_link=replace("https://www.mariowiki.com/".inner, " ", "_") | eval inner_img="/static/app/viz_halo/".inner.".png" | eval inner_color=if(inner="Mario" OR inner="Luigi", "gold", "grey")</query>
@@ -10,16 +10,14 @@
         <title>With auto transition set to "resume" (will resume after 5 seconds of user inactivity)</title>
         <search base="base"></search>
         <option name="viz_halo.halo.auto_transition">resume</option>
+        <option name="viz_halo.halo.auto_transition_sleep">3000</option>
         <option name="viz_halo.halo.draggable">true</option>
         <option name="viz_halo.halo.group_others_inner_color">#808080</option>
         <option name="viz_halo.halo.group_outer_limit">8</option>
         <option name="viz_halo.halo.group_use_others_inner">true</option>
         <option name="viz_halo.halo.group_use_others_outer">true</option>
-        <option name="viz_halo.halo.label_dot_color">#000000</option>
         <option name="viz_halo.halo.label_font_size">15</option>
-        <option name="viz_halo.halo.label_line_color">#000000</option>
-        <option name="viz_halo.halo.label_text_color">#000000</option>
-        <option name="viz_halo.halo.outer_colors">schemeCategory20b</option>
+        <option name="viz_halo.halo.outer_colors">schemePastel1</option>
         <option name="viz_halo.halo.warning_override">false</option>
         <option name="viz_halo.halo.width">700</option>
       </viz>

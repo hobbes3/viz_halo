@@ -1,6 +1,6 @@
 [views/simple_halo_example]
-version = 7.1.2
-modtime = 1539092679.582180000
+version = 7.2.0
+modtime = 1539563761.019652000
 
 [views/halo_doc]
 version = 7.1.2
@@ -9,3 +9,7 @@ modtime = 1539028631.721198000
 [views/presidential_election_2016]
 version = 7.1.2
 modtime = 1539092649.888250000
+
+[app/install/install_source_checksum]
+version = 7.2.0
+modtime = 1539399556.921966000

@@ -27,15 +27,6 @@
     text-transform: uppercase;
 }
 
-#halo .label-line {
-    stroke-width: 1;
-    stroke: black;
-}
-
-#halo .label-circle {
-    fill: black;
-}
-
 #halo .label-inner {
     fill: white;
 }

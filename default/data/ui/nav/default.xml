@@ -1,4 +1,5 @@
-<nav search_view="search" color="#65A637">
-  <view name="search" default="true" />
-  <view name="dashboards" />
+<nav search_view="search" color="#67B5D9"> 
+  <view name="halo_doc" default="true"/>
+  <view name="simple_halo_example" />
+  <view name="presidential_election_2016" />
 </nav>

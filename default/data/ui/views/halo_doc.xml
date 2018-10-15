@@ -1,0 +1,309 @@
+<dashboard>
+  <label>Halo Visualization Documentation</label>
+  <row>
+    <panel>
+      <html>
+        <h1>Description</h1>
+        <p>The Halo visualization consist of hierarchical, relational pie charts. The visualization consists of three parts:</p>
+        <ul>
+          <li>One main outer ring (pie chart)</li>
+          <li>One or more inner rings (pie charts)</li>
+          <li>Ribbons connecting the outer and inner rings</li>
+        </ul>
+        <p>Each outer segment of the outer ring is connected to one segment of a inner ring with a ribbon. Therefore the number of ribbons is equal to both number of inner ring segments and outer ring segments. A ribbon also its own category and color. Finally each connection between an outer and inner ring has a value which determines the relative size of all three parts.</p>
+        <p>The Halo visualization typically shows an object (outer), verb (ribbon), subject (inner), and the intensity (count). For example, it can visualize sentences like</p>
+        <ul>
+          <li>USA (outer) imported (ribbon) $1 million (count) gold (inner)</li>
+          <li>Alice (outer) returned (ribbon) 3 (count) tokens (inner)</li>
+          <li>The NRA (outer) spent $1 million (count) opposing (ribbon) Clinton (inner)</li>
+        </ul>
+        <h1>Field/Column Info</h1>
+        <p>A search using the Halo visualization must have certain field names. <i>The spelling must be exact</i>, but the order doesn't matter. An easy way to create this search is like <code>... | stats count by outer ribbon inner | eval ribbon_color=if(ribbon="buy", "green", "blue")</code>.</p>
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Field name</th>
+              <th>Required?</th>
+              <th>Empty values allowed?</th>
+              <th>Info</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>outer</code></td>
+              <td>Yes</td>
+              <td>No</td>
+              <td>The category names for the outer ring. The number of rows is equal to the number of segments in the outer ring.</td>
+            </tr>
+            <tr>
+              <td><code>ribbon</code></td>
+              <td>Yes</td>
+              <td>No</td>
+              <td>The category names for the ribbons (the connections between the outer and inner rings).</td>
+            </tr>
+            <tr>
+              <td><code>ribbon_color</code></td>
+              <td>Yes</td>
+              <td>No</td>
+              <td>The category colors for the ribbons. The colors must be valid HTML values, such as <code>#d62728</code>, <code>#000</code>, <code>aqua</code>, or <code>DarkSalmon</code>. Each <code>ribbon</code> should always have the same <code>ribbon_color</code>, but the code will just pick the first pair it sees.</td>
+            </tr>
+            <tr>
+              <td><code>inner</code></td>
+              <td>Yes</td>
+              <td>No</td>
+              <td>The category names for the inner rings. The number of unique <code>inner</code> values is equal to the number of inner rings.</td>
+            </tr>
+            <tr>
+              <td><code>count</code></td>
+              <td>Yes</td>
+              <td>No</td>
+              <td>The numerical value for a given <code>outer</code> to <code>ribbon</code> to <code>inner</code> connection.</td>
+            </tr>
+            <tr>
+              <td><code>inner_color</code></td>
+              <td>No</td>
+              <td>Yes</td>
+              <td>The color of the ring inside the inner rings. These colors help distinguish and categorize inner rings. For example, red inner rings can mean Republicans and blue can mean Democrats.</td>
+            </tr>
+            <tr>
+              <td><code>outer_link</code></td>
+              <td>No</td>
+              <td>Yes</td>
+              <td>The URL of the new page when the user clicks on a category of the outer ring. Each <code>outer</code> should always have the same <code>outer_link</code>, but the visualization will just pick the first pair it sees. Outer segments with empty/null values will be unclickable.</td>
+            </tr>
+            <tr>
+              <td><code>inner_link</code></td>
+              <td>No</td>
+              <td>Yes</td>
+              <td>The URL of the new page when the user clicks on a category of the inner rings. Each <code>inner</code> should always have the same <code>inner_link</code>, but the visualization will just pick the first pair it sees. Inner segments with empty/null values will be unclickable.</td>
+            </tr>
+            <tr>
+              <td><code>inner_img</code></td>
+              <td>No</td>
+              <td>Yes</td>
+              <td>The URL of the image for the inner rings. The image should be a perfect square. Each <code>inner</code> should always have the same <code>inner_img</code>, but the visualization will just pick the first pair it sees. Inner segments with empty/null values will be unclickable. To use a local image, place the image in the app's <code>appserver/static/</code> folder and reference the image by <code>/static/app/&lt;app_name&gt;/&lt;img_name&gt;.jpg</code> (doesn't have to be jpg). A Splunk restart will be required for Splunk to recognize the new static files. If the URL is invalid or the image is missing, then the Halo visualization will ignore it.</td>
+            </tr>
+          </tbody>
+        </table>
+        <h1>Visualization Options</h1>
+        <p>Note that almost all options, by default, are dependent on the option <code>width</code> and <code>radius</code>.</p>
+        <p><i>All numbers in pixels unless otherwise noted.</i></p>
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Section</th>
+              <th>Option name</th>
+              <th>Default</th>
+              <th>Info</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Size</td>
+              <td>Width</td>
+              <td><code>width = this.$el.width() * 0.8</code> (ie 80% of the panel width)</td>
+              <td>The canvas width of the halo viz. Increase this and/or panel width/height if there is clipping.</td>
+            </tr>
+            <tr>
+              <td>Size</td>
+              <td>Height</td>
+              <td><code>height = width * 0.8</code></td>
+              <td>The canvas height of the halo viz. Increase this and/or panel width/height if there is clipping.</td>
+            </tr>
+            <tr>
+              <td>Size</td>
+              <td>Radius</td>
+              <td><code>radius = width / 2 * 0.55</code></td>
+              <td>The outer radius of the Halo viz.</td>
+            </tr>
+            <tr>
+              <td>Size</td>
+              <td>Label Radius</td>
+              <td><code>radius_label = radius * 1.1</code> (ie 10% further from the outer ring radius)</td>
+              <td>The radius to the labels from the center of the halo viz.</td>
+            </tr>
+            <tr>
+              <td>Size</td>
+              <td>Outer Ring Thickness</td>
+              <td><code>outer_thickness = radius * 0.07</code></td>
+              <td>The thickness of the outer rings.</td>
+            </tr>
+            <tr>
+              <td>Size</td>
+              <td>Inner Ring Thickness Percentage</td>
+              <td><code>inner_thickness_pct = 0.8</code></td>
+              <td>The thickness of the inner rings. The thickness is a percentage since the radius of the inner rings is dynamic.</td>
+            </tr>
+            <tr>
+              <td>Size</td>
+              <td>Packing Radius</td>
+              <td><code>radius_pack = 0.8 * (radius - thickness)</code> (ie 80% of the inner radius of the outer ring)</td>
+              <td>The maximum allowed radius for circle packing of the inner rings (see <a href="https://github.com/d3/d3-hierarchy/blob/master/README.md#pack" target="_blank">d3.pack()</a>).</td>
+            </tr>
+            <tr>
+              <td>Size</td>
+              <td>Packing Padding</td>
+              <td><code>padding_pack = radius * 0.1</code></td>
+              <td>The spacing/padding between inner rings.</td>
+            </tr>
+            <tr>
+              <td>Size</td>
+              <td>Ribbon Curvature</td>
+              <td><code>ribbon_radius_cp_offset = radius * 0.2</code></td>
+              <td>The curvature of the ribbon from the inner rings. Setting to 0 disable curvature (meaning the ribbons will be straight lines from the inner rings to the outer ring). The offset is the (one and only) control point of the Bézier curve from the inner rings.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Warning Override</td>
+              <td><code>warning_override = "false"</code></td>
+              <td>This visualization has built-in warnings to prevent browser slowness or crashes when there are too many objects for d3 to draw. If some of the grouping limits are set too high, then the warnings will appear and the visualization will not draw. Selecting this to <code>true</code> will ignore these warnings and proceed to draw the visualization.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Outer Ring Grouping Limit</td>
+              <td><code>group_outer_limit = 30</code></td>
+              <td>The limit for the top outer rings by total value. All other outer rings will be grouped into "others".</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Inner Ring Grouping Limit</td>
+              <td><code>group_inner_limit = 10</code></td>
+              <td>The limit for the top inner rings by total value excluding "others". All other inner rings will be grouped into "others".</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Outer Ring Show Others</td>
+              <td><code>group_use_others_outer = "true"</code></td>
+              <td>Show the "others" group for the outer rings.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Inner Ring Show Others</td>
+              <td><code>group_use_others_inner = "true"</code></td>
+              <td>Show the "others" group for the inner rings.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Outer Ring Outers Label</td>
+              <td><code>group_others_outer_label = "others"</code></td>
+              <td>The label for the outer rings "others" group.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Inner Ring Others Label</td>
+              <td><code>group_others_inner_label = "others"</code></td>
+              <td>The label for the inner rings "others" group.</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Inner Ring Others Color</td>
+              <td><code>group_others_inner_color = "grey"</code></td>
+              <td>The inner ring color for "others".</td>
+            </tr>
+            <tr>
+              <td>Grouping</td>
+              <td>Inner Ring Others Image</td>
+              <td><code>group_use_others_inner = "true"</code></td>
+              <td>The URL of the image for the "others" inner ring. Similar to <code>inner_img</code> field.</td>
+            </tr>
+            <tr>
+              <td>Color</td>
+              <td>Outer Ring Colors</td>
+              <td><code>outer_colors = "schemeCategory20b"</code></td>
+              <td>The d3 category scale for the color of the outer rings. More info (and actual colors) found at <a href="https://github.com/d3/d3-scale/blob/master/README.md#category-scales" target="_blank">d3 category scales</a> and <a href="https://github.com/d3/d3-scale-chromatic#categorical" target="_blank">d3 chromatic category scales</a>.
+              </td>
+            </tr>
+            <tr>
+              <td>Opacity</td>
+              <td>Ribbon Opacity</td>
+              <td><code>opacity_ribbon = 0.6</code></td>
+              <td>The opacity (from 0 to 1) of the ribbons while not during a mouseover.</td>
+            </tr>
+            <tr>
+              <td>Opacity</td>
+              <td>Faded Opacity</td>
+              <td><code>opacity_fade = 0.1</code></td>
+              <td>The opacity (from 0 to 1) of all unrelated objects during a mouseover.</td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Outer Label Font Size</td>
+              <td><code>label_font_size = radius * 0.04</code></td>
+              <td>The font size of the labels. A value of 0 will hide both the outer labels its associated lines.</td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Outer Label Spacing</td>
+              <td><code>label_spacing = radius * 0.01</code></td>
+              <td>The spacing between the labels and the lines from the outer rings.</td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Outer Label Wrap Length</td>
+              <td><code>label_wrap_length = radius * 0.7</code></td>
+              <td>The maximum width of the labels before line wrapping is forced.</td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Inner Label Scale</td>
+              <td><code>inner_label_scale = 0.9</code></td>
+              <td>The scale (from 0 to 1) on how much "space" the inner labels will take up inside. A value of 0 will hide the inner labels, whereas a value of 1 will make the inner labels take up as much as space as possible inside the inner rings while still perserving the font's aspect ratio (the label will touch the inner rings).</td>
+            </tr>
+            <tr>
+              <td>Animation</td>
+              <td>Auto Transition</td>
+              <td><code>auto_transition = "never"</code></td>
+              <td>Whether to turn on or off auto transition where the visualization will rotate through all of the ribbon types automatically. This is useful for display the visualization on non-interacting devices like wall-mounted TVs.<br/>
+                <ul>
+                  <li><code>always</code>: The auto transition will always be on regardless of user actions</li>
+                  <li><code>stop</code>: The auto transition will stop as soon as there is a user action (ie mousing over the visualization or clicking the dropdown)</li>
+                  <li><code>resume</code>: The auto transition will stop as soon as there is a user action, but will resume after user inactivity (see Auto Transition Resume Sleep)</li>
+                  <li><code>never</code>: No auto transition</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Animation</td>
+              <td>Auto Transition Sleep</td>
+              <td><code>auto_transition_sleep = 2000</code></td>
+              <td>If auto transition is turned on then how many millisecond to wait before the visualization transitions to the next ribbon type. This value should be higher than transition duration.</td>
+            </tr>
+            <tr>
+              <td>Animation</td>
+              <td>Auto Transition Resume Sleep</td>
+              <td><code>auto_transition_resume_sleep = 5000</code></td>
+              <td>If auto transition stop is set to "resume", then how much time (in millisecond) to wait until auto transition is resumed after user inactivity.</td>
+            </tr>
+            <tr>
+              <td>Animation</td>
+              <td>Inner Rings Draggable</td>
+              <td><code>draggable = "true"</code></td>
+              <td>If auto transition is turned on then how many millisecond to wait before the visualization transitions to the next ribbon type. This value should be higher than transition duration.</td>
+            </tr>
+            <tr>
+              <td>Animation</td>
+              <td>Transition Duration</td>
+              <td><code>transition_duration = 750</code></td>
+              <td>The total time (in millisecond) the transition will take during an animation (ie changing ribbon types).</td>
+            </tr>
+            <tr>
+              <td>Animation</td>
+              <td>Label De-Collison Delta</td>
+              <td><code>label_relax_delta = 0.5</code></td>
+              <td>The increment (how far up/down) the labels move during a cycle of the label de-collison check.</td>
+            </tr>
+            <tr>
+              <td>Animation</td>
+              <td>Label De-Collison Sleep</td>
+              <td><code>label_relax_sleep = 10</code></td>
+              <td>How much to wait (in milliseconds) before executing another cycle of the label de-collison check.</td>
+            </tr>
+          </tbody>
+        </table>
+        <h1>Tips</h1>
+        <p>The Halo visualization looks best when there are at least 3 ribbons per ribbon type per inner ring. If there aren't enough ribbons then the ribbons may cross and look weird. On the other hand, if there are too many ribbons or rings, then visualization will be slow and look very messy. The built-in warning will attempt to stop drawing if it detects too many objects.</p>
+        <p>The outer and inner rings should be in separate sets. If they are in the same set then consider using a <a href="https://bost.ocks.org/mike/uberdata/" target="_blank">Chord diagram</a> instead. A Chord diagram for Splunk is available in the <a href="https://splunkbase.splunk.com/app/2717/" target="_blank">Custom Visualization (legacy)</a> app.</p>
+      </html>
+    </panel>
+  </row>
+</dashboard>

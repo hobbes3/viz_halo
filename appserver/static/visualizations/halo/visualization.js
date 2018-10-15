@@ -200,8 +200,11 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                group_use_others_inner       = config_default("group_use_others_inner",       "true"),
 	                group_others_outer_label     = config_default("group_others_outer_label",     "others"),
 	                group_others_inner_label     = config_default("group_others_inner_label",     "others"),
-	                group_others_inner_color     = config_default("group_others_inner_color",     "grey"),
+	                group_others_inner_color     = config_default("group_others_inner_color",     "#808080"),
 	                group_others_inner_img       = config_default("group_others_inner_img",       null),
+	                label_text_color             = config_default("label_text_color",             "#000000"),
+	                label_line_color             = config_default("label_line_color",             "#000000"),
+	                label_dot_color              = config_default("label_dot_color",              "#000000"),
 	                label_font_size              = config_default("label_font_size",              radius * 0.04),
 	                label_spacing                = config_default("label_spacing",                radius * 0.01),
 	                label_wrap_length            = config_default("label_wrap_length",            radius * 0.7),
@@ -586,6 +589,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                    .attr("x", 0)
 	                    .attr("y", 0)
 	                    .attr("r", 2)
+	                    .attr("fill", label_dot_color)
 	                    .attr("transform", function (d, i) {
 	                        return "translate(" + arc_outer.centroid(d) + ")";
 	                    })
@@ -614,6 +618,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                            y = Math.sin(mid_angle) * radius_label;
 	                        return y;
 	                    })
+	                    .attr("stroke", label_line_color)
 	                    .attr("class", "label-line")
 	                    .each(function(d) {
 	                        this._current = d;
@@ -766,6 +771,7 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                            x = Math.cos(mid_angle) * radius_label;
 	                        return (x > 0) ? "start" : "end";
 	                    })
+	                    .attr("fill", label_text_color)
 	                    .attr("class", "label-text")
 	                    .attr("dominant-baseline", "middle")
 	                    .style("font-size", label_font_size)

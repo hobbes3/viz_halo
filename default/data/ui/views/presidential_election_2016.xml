@@ -1,0 +1,57 @@
+<dashboard>
+  <label>2016 Presidential Election</label>
+  <search id="base">
+    <query>| inputlookup clinton_trump.csv
+| eval outer='committee.name'
+| eval inner=candidate
+| eval count=round(spent)
+| eval ribbon=toward
+| eval ribbon_color=if(toward="supporting", "#2ca02c", "#d62728")
+| eval outer_link=if(committee_id="none", null(), "https://beta.fec.gov/data/committee/".committee_id."/?cycle=2016&amp;tab=independent-expenditures-committee")
+| eval inner_link="https://beta.fec.gov/data/candidate/".candidate_id."/?cycle=2016&amp;election_full=true"
+| eval inner_img="/static/app/viz_halo/".candidate."_head.jpg"
+| table outer* ribbon* inner* count</query>
+  </search>
+  <row>
+    <panel>
+      <html>
+        <p>Data aggregated from the <a href="https://beta.fec.gov/" target="_blank">Federal Election Committee</a>.</p>
+        <p>Visit <a href="http://elections.splunk4good.com" target="_blank">http://elections.splunk4good.com</a> for the full write-up, including the technical discussion.</p>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Independent Expenditures spent on either Clinton or Trump</title>
+      <viz type="viz_halo.halo">
+        <search base="base"></search>
+        <option name="height">750</option>
+        <option name="viz_halo.halo.auto_transition">never</option>
+        <option name="viz_halo.halo.draggable">true</option>
+        <option name="viz_halo.halo.group_others_inner_color">#808080</option>
+        <option name="viz_halo.halo.group_use_others_inner">true</option>
+        <option name="viz_halo.halo.group_use_others_outer">true</option>
+        <option name="viz_halo.halo.inner_labels_scale">0</option>
+        <option name="viz_halo.halo.outer_colors">schemeCategory20b</option>
+        <option name="viz_halo.halo.transition_duration">1300</option>
+        <option name="viz_halo.halo.warning_override">false</option>
+        <option name="viz_halo.halo.width">1000</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Source data</title>
+      <table>
+        <search base="base"></search>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>
