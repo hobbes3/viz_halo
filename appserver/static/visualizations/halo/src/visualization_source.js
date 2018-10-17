@@ -23,7 +23,7 @@ function(
                 .append("div")
                     .attr("id", "tooltip");
 
-            this.$el.append('<div id="ribbon_controls"><label>Choose ribbon types: </label><select id="ribbon_dropdown"><option value="__ALL__">All</option></select></div>');
+            this.$el.append('<div id="ribbon_info"><label>Choose ribbon types: </label><select id="ribbon_dropdown"><option value="__ALL__">All</option></select><div id="total"></div><div id="ribbon_legend"></div></div>');
 
             window.timer_label_relax;
             window.timer_auto_transition;
@@ -261,6 +261,7 @@ function(
                     .map(function(v, k) {
                         var o = {
                             "ribbon": k,
+                            "ribbon_color": v[0].ribbon_color,
                             "total": _(v).total("count")
                         }
 
@@ -288,10 +289,23 @@ function(
                         .value()
             };
 
+            $("#total").empty();
             $("#ribbon_dropdown option").not("[value='__ALL__']").remove();
+            $("#ribbon_legend").empty();
+
+            $("#total").append("Total: " + data.stats.total);
 
             _(data.stats.ribbon).each(function(o) {
                 $("#ribbon_dropdown").append('<option value="' + o.ribbon + '">' + o.ribbon + '</option>');
+
+                $("#ribbon_legend").append(
+                    '<div class="input-color">' +
+                        '<span style="padding-left: 20px;">' +
+                            o.ribbon + ' - ' + o.total +
+                        '</span>' +
+                        '<div class="color-box" style="background-color: ' + o.ribbon_color + ';"></div>' +
+                    '</div>'
+                );
             });
 
             data.outer = _(rows).map(function(v, i) {
@@ -1227,19 +1241,19 @@ function(
                     });
 
 
-            function ribbon_controls_choose_next() {
-                //console.log("ribbon_controls_choose_next()");
+            function ribbon_dropdown_choose_next() {
+                //console.log("ribbon_dropdown_choose_next()");
 
-                var n = $("#ribbon_controls option").length,
-                    i = $("#ribbon_controls option:selected").index(),
+                var n = $("#ribbon_dropdown option").length,
+                    i = $("#ribbon_dropdown option:selected").index(),
                     x = i + 1 >= n ? 0 : i + 1;
 
-                $("#ribbon_controls option:eq(" + x + ")").prop("selected", true).change();
+                $("#ribbon_dropdown option:eq(" + x + ")").prop("selected", true).change();
             }
 
             function start_auto_transition() {
                 if(auto_transition !== "never") {
-                    window.timer_auto_transition = setInterval(ribbon_controls_choose_next, auto_transition_sleep);
+                    window.timer_auto_transition = setInterval(ribbon_dropdown_choose_next, auto_transition_sleep);
                 }
             }
 
