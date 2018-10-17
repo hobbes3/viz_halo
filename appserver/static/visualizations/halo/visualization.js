@@ -334,19 +334,21 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        .value()
 	            };
 
+	            var number_format = d3.format(",d");
+
 	            $("#total").empty();
 	            $("#ribbon_dropdown option").not("[value='__ALL__']").remove();
 	            $("#ribbon_legend").empty();
 
-	            $("#total").append("Total: " + data.stats.total);
+	            $("#total").append("Total: " + number_format(data.stats.total));
 
 	            _(data.stats.ribbon).each(function(o) {
 	                $("#ribbon_dropdown").append('<option value="' + o.ribbon + '">' + o.ribbon + '</option>');
 
 	                $("#ribbon_legend").append(
 	                    '<div class="input-color">' +
-	                        '<span style="padding-left: 20px">' +
-	                            o.ribbon + ' - ' + o.total +
+	                        '<span style="padding-left: 20px;">' +
+	                            o.ribbon + ' - ' + number_format(o.total) +
 	                        '</span>' +
 	                        '<div class="color-box" style="background-color: ' + o.ribbon_color + ';"></div>' +
 	                    '</div>'
@@ -388,8 +390,6 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                .value();
 
 	            var color_outer = d3.scaleOrdinal(d3[outer_colors]);
-
-	            var number_format = d3.format(",d");
 
 	            function tooltip_position() {
 	                that.tooltip
