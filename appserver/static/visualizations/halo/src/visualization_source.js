@@ -2,7 +2,6 @@ define([
     'jquery',
     'underscore',
     'd3',
-    'd3-scale-chromatic',
     'api/SplunkVisualizationBase',
     'api/SplunkVisualizationUtils'
 ],
@@ -10,7 +9,6 @@ function(
     $,
     _,
     d3,
-    d3_scale_chromatic,
     SplunkVisualizationBase,
     SplunkVisualizationUtils
 ) {
@@ -144,7 +142,7 @@ function(
                 outer_thickness              = config_default("outer_thickness",              radius * 0.07),
                 inner_thickness_pct          = config_default("inner_thickness_pct",          0.8),
                 ribbon_radius_cp_offset      = config_default("ribbon_radius_cp_offset",      radius * 0.2),
-                outer_colors                 = config_default("outer_colors",                 "schemeCategory20b"),
+                outer_colors                 = config_default("outer_colors",                 "schemeCategory10"),
                 radius_pack                  = config_default("radius_pack",                  0.8 * (radius - outer_thickness)),
                 padding_pack                 = config_default("padding_pack",                 radius * 0.1),
                 opacity_ribbon               = config_default("opacity_ribbon",               0.6),
@@ -330,7 +328,7 @@ function(
                 })
                 .value();
 
-            var color_outer = d3.scaleOrdinal(d3[outer_colors] || d3_scale_chromatic[outer_colors]);
+            var color_outer = d3.scaleOrdinal(d3[outer_colors]);
 
             var number_format = d3.format(",d");
 

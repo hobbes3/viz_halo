@@ -19,7 +19,7 @@
         <option name="viz_halo.halo.label_font_size">15</option>
         <option name="viz_halo.halo.label_line_color">#000000</option>
         <option name="viz_halo.halo.label_text_color">#000000</option>
-        <option name="viz_halo.halo.outer_colors">schemeCategory20b</option>
+        <option name="viz_halo.halo.outer_colors">schemeDark2</option>
         <option name="viz_halo.halo.warning_override">false</option>
         <option name="viz_halo.halo.width">700</option>
       </viz>
