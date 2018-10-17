@@ -120,24 +120,6 @@
         </div>
     </div>
 </form>
-<form class="splunk-formatter-section" section-label="Outer Ring">
-    <div class="control-group">
-        <label class="control-label">Outer Ring Colors</label>
-        <div class="controls controls-block">
-            <splunk-select name="{{VIZ_NAMESPACE}}.outer_colors" value="schemeCategory10">
-                <option value="schemeCategory10">schemeCategory10</option>
-                <option value="schemeAccent">schemeAccent</option>
-                <option value="schemeDark2">schemeDark2</option>
-                <option value="schemePaired">schemePaired</option>
-                <option value="schemePastel1">schemePastel1</option>
-                <option value="schemePastel2">schemePastel2</option>
-                <option value="schemeSet1">schemeSet1</option>
-                <option value="schemeSet2">schemeSet2</option>
-                <option value="schemeSet3">schemeSet3</option>
-            </splunk-select>
-        </div>
-    </div>
-</form>
 <form class="splunk-formatter-section" section-label="Opacity">
     <div class="control-group">
         <label class="control-label">Ribbon Opacity</label>
@@ -196,6 +178,36 @@
         <label class="control-label">Inner Label Scale</label>
         <div class="controls controls-block">
             <splunk-text-input name="{{VIZ_NAMESPACE}}.inner_labels_scale"></splunk-text-input>
+        </div>
+    </div>
+</form>
+<form class="splunk-formatter-section" section-label="Miscellaneous">
+    <div class="control-group">
+        <label class="control-label">Outer Ring Colors</label>
+        <div class="controls controls-block">
+            <splunk-select name="{{VIZ_NAMESPACE}}.outer_colors" value="schemeCategory10">
+                <option value="schemeCategory10">schemeCategory10</option>
+                <option value="schemeAccent">schemeAccent</option>
+                <option value="schemeDark2">schemeDark2</option>
+                <option value="schemePaired">schemePaired</option>
+                <option value="schemePastel1">schemePastel1</option>
+                <option value="schemePastel2">schemePastel2</option>
+                <option value="schemeSet1">schemeSet1</option>
+                <option value="schemeSet2">schemeSet2</option>
+                <option value="schemeSet3">schemeSet3</option>
+            </splunk-select>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Unit Prefix</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.unit_prefix"></splunk-text-input>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Unit Suffix</label>
+        <div class="controls controls-block">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.unit_suffix"></splunk-text-input>
         </div>
     </div>
 </form>

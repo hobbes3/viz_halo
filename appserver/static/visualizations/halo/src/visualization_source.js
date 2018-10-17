@@ -142,7 +142,6 @@ function(
                 outer_thickness              = config_default("outer_thickness",              radius * 0.07),
                 inner_thickness_pct          = config_default("inner_thickness_pct",          0.8),
                 ribbon_radius_cp_offset      = config_default("ribbon_radius_cp_offset",      radius * 0.2),
-                outer_colors                 = config_default("outer_colors",                 "schemeCategory10"),
                 radius_pack                  = config_default("radius_pack",                  0.8 * (radius - outer_thickness)),
                 padding_pack                 = config_default("padding_pack",                 radius * 0.1),
                 opacity_ribbon               = config_default("opacity_ribbon",               0.6),
@@ -164,6 +163,9 @@ function(
                 inner_labels_scale           = config_default("inner_labels_scale",           0.9),
                 label_relax_delta            = config_default("label_relax_delta",            0.5),
                 label_relax_sleep            = config_default("label_relax_sleep",            10),
+                outer_colors                 = config_default("outer_colors",                 "schemeCategory10"),
+                unit_prefix                  = config_default("unit_prefix",                  ""),
+                unit_suffix                  = config_default("unit_suffix",                  ""),
                 auto_transition              = config_default("auto_transition",              "never"),
                 auto_transition_sleep        = config_default("auto_transition_sleep",        2000),
                 auto_transition_resume_sleep = config_default("auto_transition_resume_sleep", 5000),
@@ -295,7 +297,7 @@ function(
             $("#ribbon_dropdown option").not("[value='__ALL__']").remove();
             $("#ribbon_legend").empty();
 
-            $("#total").append("Total: " + number_format(data.stats.total));
+            $("#total").append("Total: " + unit_prefix + " " + number_format(data.stats.total));
 
             _(data.stats.ribbon).each(function(o) {
                 $("#ribbon_dropdown").append('<option value="' + o.ribbon + '">' + o.ribbon + '</option>');
@@ -303,7 +305,7 @@ function(
                 $("#ribbon_legend").append(
                     '<div class="input-color">' +
                         '<span style="padding-left: 20px;">' +
-                            o.ribbon + ' - ' + number_format(o.total) +
+                            o.ribbon + ' - ' + unit_prefix + " " + number_format(o.total) + " " + unit_suffix +
                         '</span>' +
                         '<div class="color-box" style="background-color: ' + o.ribbon_color + ';"></div>' +
                     '</div>'
@@ -439,7 +441,7 @@ function(
                     pct = count / total * 100,
                     pct_ribbon = count / total_ribbon * 100;
 
-                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + number_format(count);
+                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + unit_prefix + " " + number_format(count) + " " + unit_suffix;
 
                 html += ribbon_choice === "__ALL__" ?
                     "<br>" + pct_label(pct) + " of total amount" :
@@ -860,14 +862,14 @@ function(
 
 
                 if(ribbon_choice === "__ALL__") {
-                    html = inner_label + ": " + number_format(count) + " total" +
+                    html = inner_label + ": " + unit_prefix + " " + number_format(count) + " " + unit_suffix + " total" +
                         "<br>" + pct_label(pct) + " of total amount";
                 }
                 else {
                     total_ribbon = _(data.stats.ribbon).findWhere({"ribbon": ribbon_choice}).total,
                     pct_ribbon = count / total_ribbon * 100;
 
-                    html = ribbon_choice + " -> " + inner_label + ": " + number_format(count) +
+                    html = ribbon_choice + " -> " + inner_label + ": " + unit_prefix + " " + number_format(count) + " " + unit_suffix +
                         "<br>" + ribbon_choice + ": " + pct_label(pct_ribbon) + " of total amount";
                 }
 
@@ -975,7 +977,7 @@ function(
                     pct = count / total * 100,
                     pct_ribbon = count / total_ribbon * 100;
 
-                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + number_format(count);
+                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + unit_prefix + " " + number_format(count) + " " + unit_suffix;
 
                 html += ribbon_choice === "__ALL__" ?
                     "<br>" + inner_label + ": " + pct_label(pct) + " of total amount" :
@@ -1163,7 +1165,7 @@ function(
                     inner_label = d.data.inner.capitalize(),
                     count = d.data.count;
 
-                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + number_format(count);
+                var html = outer_label + " -> " + ribbon_label + " -> " + inner_label + ": " + unit_prefix + " " + number_format(count) + " " + unit_suffix;
 
                 that.tooltip
                     .style("visibility", "visible")
